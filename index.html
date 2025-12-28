@@ -1,222 +1,43 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Пиздец-Кликер 🔥</title>
-  <style>
-    :root {
-      --bg: #0d001a;
-      --accent: #8b00ff;
-      --accent-dark: #5a00a8;
-      --text: #e0d0ff;
-      --card: #1a0033;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-    }
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 20px var(--accent);
-      color: var(--accent);
-    }
-    #score {
-      font-size: 4rem;
-      font-weight: bold;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 30px var(--accent);
-    }
-    #main-click {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #2a004d, #000);
-      border: 8px solid var(--accent);
-      box-shadow: 0 0 40px rgba(139,0,255,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.15s;
-      margin-bottom: 2rem;
-    }
-    #main-click:active {
-      transform: scale(0.92);
-      box-shadow: 0 0 60px rgba(139,0,255,0.9);
-    }
-    .icon {
-      width: 160px;
-      height: 160px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 15px rgba(139,0,255,0.7));
-    }
-    .shop {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      width: 90%;
-      max-width: 1200px;
-      padding: 2rem;
-    }
-    .item {
-      background: var(--card);
-      border: 2px solid var(--accent-dark);
-      border-radius: 16px;
-      padding: 1.2rem;
-      text-align: center;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(139,0,255,0.4);
-      border-color: var(--accent);
-    }
-    .item img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      margin-bottom: 0.8rem;
-    }
-    .item-name {
-      font-size: 1.4rem;
-      margin-bottom: 0.4rem;
-    }
-    .item-cost {
-      font-size: 1.2rem;
-      color: #ffcc00;
-    }
-    .item-owned {
-      font-size: 1rem;
-      color: #00ff88;
-      margin-top: 0.5rem;
-    }
-    footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      opacity: 0.6;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Я УССАЛСЯ 💦</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #1e8033, #1a9033, #4aa0e0);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      #tapArea {
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle, #ff00aa, #aa00ee);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        animation: pulse 2s infinite;
+        box-shadow: 0 0 40px rgba(255,0,170,0.6), inset 0 0 30px rgba(255,255,255,0.2);
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(0.92); box-shadow: 0 0 40px rgba(255,0,170,0.6), inset 0 0 30px rgba(255,255,255,0.2); }
+        50% { transform: scale(1); box-shadow: 0 0 60px rgba(255,0,170,0.9), inset 0 0 50px rgba(255,255,255,0.4); }
+        100% { transform: scale(0.92); box-shadow: 0 0 40px rgba(255,0,170,0.6), inset 0 0 30px rgba(255,255,255,0.2); }
+      }
+    </style>
 </head>
 <body>
-  <h1>ЕБАНЫЙ КЛИКЕР</h1>
-  <div id="score">0</div>
-
-  <div id="main-click">
-    <img class="icon" src="https://images.unsplash.com/photo-1617791160505-6f00504e3519?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="autoclicker">
-  </div>
-
-  <div class="shop">
-    <div class="item" data-type="autoclicker" data-cost="15" data-income="1">
-      <img src="https://images.unsplash.com/photo-1500595046743-ee08c7147c8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="autoclicker">
-      <div class="item-name">Автокликер</div>
-      <div class="item-cost">Стоит: <span>15</span></div>
-      <div class="item-owned">Куплено: <span>0</span></div>
-    </div>
-
-    <div class="item" data-type="farm" data-cost="100" data-income="8">
-      <img src="https://images.unsplash.com/photo-1500384066616-8a8d547abfc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="farm">
-      <div class="item-name">Ферма</div>
-      <div class="item-cost">Стоит: <span>100</span></div>
-      <div class="item-owned">Куплено: <span>0</span></div>
-    </div>
-
-    <div class="item" data-type="factory" data-cost="800" data-income="60">
-      <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="factory">
-      <div class="item-name">Завод</div>
-      <div class="item-cost">Стоит: <span>800</span></div>
-      <div class="item-owned">Куплено: <span>0</span></div>
-    </div>
-
-    <div class="item" data-type="mine" data-cost="5000" data-income="400">
-      <img src="https://images.unsplash.com/photo-1617791160505-6f00504e3519?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="mine">
-      <div class="item-name">Шахта</div>
-      <div class="item-cost">Стоит: <span>5000</span></div>
-      <div class="item-owned">Куплено: <span>0</span></div>
-    </div>
-
-    <div class="item" data-type="corporation" data-cost="30000" data-income="2500">
-      <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="corporation">
-      <div class="item-name">Корпорация</div>
-      <div class="item-cost">Стоит: <span>30000</span></div>
-      <div class="item-owned">Куплено: <span>0</span></div>
-    </div>
-
-    <div class="item" data-type="planet" data-cost="200000" data-income="15000">
-      <img src="https://images.unsplash.com/photo-1614732414444-096e5f1122d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="planet">
-      <div class="item-name">Планета</div>
-      <div class="item-cost">Стоит: <span>200000</span></div>
-      <div class="item-owned">Куплено: <span>0</span></div>
-    </div>
-  </div>
-
-  <footer>© 2025 Ты уже миллиардер, пиздец как круто 😂🔥</footer>
-
-  <script>
-    let score = 0;
-    let clickPower = 1;
-    let autoIncome = 0;
-
-    const scoreEl = document.getElementById('score');
-    const mainClick = document.getElementById('main-click');
-
-    // Клик по главному шарику
-    mainClick.addEventListener('click', () => {
-      score += clickPower;
-      updateScore();
-    });
-
-    // Магазин
-    document.querySelectorAll('.item').forEach(item => {
-      item.addEventListener('click', () => {
-        const cost = parseInt(item.dataset.cost);
-        const type = item.dataset.type;
-        const income = parseInt(item.dataset.income);
-
-        if (score >= cost) {
-          score -= cost;
-          const owned = parseInt(item.querySelector('.item-owned span').textContent);
-          item.querySelector('.item-owned span').textContent = owned + 1;
-
-          // Увеличиваем доход
-          autoIncome += income;
-          updateScore();
-
-          // Дороже с каждым разом (классика кликеров)
-          const newCost = Math.round(cost * 1.15);
-          item.dataset.cost = newCost;
-          item.querySelector('.item-cost span').textContent = newCost;
-
-          // Легкий бонус к клику от автокликера
-          if (type === 'autoclicker') clickPower += 1;
-        } else {
-          item.style.borderColor = '#ff4444';
-          setTimeout(() => item.style.borderColor = '', 300);
-        }
-      });
-    });
-
-    // Автодобыча каждую секунду
-    setInterval(() => {
-      score += autoIncome;
-      updateScore();
-    }, 1000);
-
-    function updateScore() {
-      scoreEl.textContent = Math.floor(score).toLocaleString();
-    }
-
-    // Для красоты — можно добавить эффекты кликов, но это уже бонус
-  </script>
+    <div id="tapArea">💦💦💦</div>
 </body>
 </html>
