@@ -1,46 +1,566 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background: #1a1a2e;
-        }
-        
-        .animated-bg {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(270deg, #ff0080, #ff8c00, #40e0d0, #9d4edd, #06ffa5, #ff0080);
-            background-size: 600% 600%;
-            animation: gradientFlow 12s ease infinite;
-        }
-        
-        @keyframes gradientFlow {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Shooter Premium</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    #game-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    #header {
+      margin-bottom: 15px;
+    }
+
+    .score-section {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+    }
+
+    .stat {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 12px 20px;
+      border-radius: 10px;
+      text-align: center;
+      flex: 1;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .stat .label {
+      display: block;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 12px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stat .value {
+      display: block;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 500px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      display: block;
+      margin-bottom: 15px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108, 117, 125, 0.5);
+    }
+
+    #nextBubble {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    #nextBubble .label {
+      display: block;
+      color: #495057;
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    #nextBubblePreview {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal h2 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .modal p {
+      color: #495057;
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .modal span {
+      color: #667eea;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <div class="animated-bg"></div>
+  <div id="game-container">
+    <div id="header">
+      <div class="score-section">
+        <div class="stat">
+          <span class="label">Score</span>
+          <span id="score" class="value">0</span>
+        </div>
+        <div class="stat">
+          <span class="label">Best</span>
+          <span id="best" class="value">0</span>
+        </div>
+        <div class="stat">
+          <span class="label">Level</span>
+          <span id="level" class="value">1</span>
+        </div>
+      </div>
+    </div>
+    
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="controls">
+      <button id="restartBtn" class="btn btn-primary">New Game</button>
+      <button id="pauseBtn" class="btn btn-secondary">Pause</button>
+    </div>
+    
+    <div id="nextBubble">
+      <span class="label">Next:</span>
+      <div id="nextBubblePreview"></div>
+    </div>
+  </div>
+  
+  <div id="gameOver" class="overlay" style="display:none;">
+    <div class="modal">
+      <h2>Game Over!</h2>
+      <p>Final Score: <span id="finalScore">0</span></p>
+      <p>Best Score: <span id="finalBest">0</span></p>
+      <button id="playAgainBtn" class="btn btn-primary">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+// Game Configuration
+const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F'];
+const ROWS = 8;
+const COLS = 9;
+const BUBBLE_RADIUS = 20;
+
+// Game State
+let canvas, ctx;
+let bubbles = [];
+let shooter = { x: 0, y: 0, angle: 0, color: '', nextColor: '' };
+let score = 0;
+let best = localStorage.getItem('bubbleBest') || 0;
+let level = 1;
+let isPaused = false;
+let isGameOver = false;
+let animatingBubbles = [];
+
+// Initialize
+window.addEventListener('DOMContentLoaded', () => {
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  
+  canvas.width = COLS * (BUBBLE_RADIUS * 2) + BUBBLE_RADIUS;
+  canvas.height = ROWS * (BUBBLE_RADIUS * 2) + 100;
+  
+  shooter.x = canvas.width / 2;
+  shooter.y = canvas.height - 50;
+  
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('click', shootBubble);
+  document.getElementById('restartBtn').addEventListener('click', resetGame);
+  document.getElementById('pauseBtn').addEventListener('click', togglePause);
+  document.getElementById('playAgainBtn').addEventListener('click', () => {
+    document.getElementById('gameOver').style.display = 'none';
+    resetGame();
+  });
+  
+  resetGame();
+  gameLoop();
+});
+
+function resetGame() {
+  bubbles = [];
+  score = 0;
+  level = 1;
+  isPaused = false;
+  isGameOver = false;
+  animatingBubbles = [];
+  
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < COLS; col++) {
+      if (row % 2 === 1 && col === COLS - 1) continue;
+      
+      const x = col * (BUBBLE_RADIUS * 2) + BUBBLE_RADIUS + (row % 2 ? BUBBLE_RADIUS : 0);
+      const y = row * (BUBBLE_RADIUS * 2) + BUBBLE_RADIUS;
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      
+      bubbles.push({ x, y, color, row, col });
+    }
+  }
+  
+  shooter.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  shooter.nextColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+  
+  updateUI();
+}
+
+function handleMouseMove(e) {
+  if (isGameOver || isPaused) return;
+  
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+  
+  const dx = mouseX - shooter.x;
+  const dy = mouseY - shooter.y;
+  shooter.angle = Math.atan2(dy, dx);
+}
+
+function shootBubble(e) {
+  if (isGameOver || isPaused || animatingBubbles.length > 0) return;
+  
+  const speed = 8;
+  const vx = Math.cos(shooter.angle) * speed;
+  const vy = Math.sin(shooter.angle) * speed;
+  
+  animatingBubbles.push({
+    x: shooter.x,
+    y: shooter.y,
+    vx, vy,
+    color: shooter.color,
+    radius: BUBBLE_RADIUS
+  });
+  
+  shooter.color = shooter.nextColor;
+  shooter.nextColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+  updateNextBubble();
+}
+
+function updateBubbles() {
+  for (let i = animatingBubbles.length - 1; i >= 0; i--) {
+    const bubble = animatingBubbles[i];
+    bubble.x += bubble.vx;
+    bubble.y += bubble.vy;
+    
+    if (bubble.x - BUBBLE_RADIUS < 0 || bubble.x + BUBBLE_RADIUS > canvas.width) {
+      bubble.vx *= -1;
+      bubble.x = Math.max(BUBBLE_RADIUS, Math.min(canvas.width - BUBBLE_RADIUS, bubble.x));
+    }
+    
+    if (bubble.y - BUBBLE_RADIUS < 0) {
+      snapBubble(bubble);
+      animatingBubbles.splice(i, 1);
+      continue;
+    }
+    
+    let collision = false;
+    for (const existingBubble of bubbles) {
+      const dx = bubble.x - existingBubble.x;
+      const dy = bubble.y - existingBubble.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < BUBBLE_RADIUS * 2) {
+        snapBubble(bubble);
+        animatingBubbles.splice(i, 1);
+        collision = true;
+        break;
+      }
+    }
+  }
+}
+
+function snapBubble(bubble) {
+  let closestPos = null;
+  let minDist = Infinity;
+  
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      if (row % 2 === 1 && col === COLS - 1) continue;
+      
+      const x = col * (BUBBLE_RADIUS * 2) + BUBBLE_RADIUS + (row % 2 ? BUBBLE_RADIUS : 0);
+      const y = row * (BUBBLE_RADIUS * 2) + BUBBLE_RADIUS;
+      
+      const occupied = bubbles.some(b => b.row === row && b.col === col);
+      if (occupied) continue;
+      
+      const dx = bubble.x - x;
+      const dy = bubble.y - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist < minDist) {
+        minDist = dist;
+        closestPos = { x, y, row, col };
+      }
+    }
+  }
+  
+  if (closestPos) {
+    bubbles.push({
+      x: closestPos.x,
+      y: closestPos.y,
+      color: bubble.color,
+      row: closestPos.row,
+      col: closestPos.col
+    });
+    
+    checkMatches(closestPos.row, closestPos.col);
+    checkGameOver();
+  }
+}
+
+function checkMatches(row, col) {
+  const color = bubbles.find(b => b.row === row && b.col === col)?.color;
+  if (!color) return;
+  
+  const matches = [];
+  const visited = new Set();
+  
+  function findMatches(r, c) {
+    const key = `${r},${c}`;
+    if (visited.has(key)) return;
+    visited.add(key);
+    
+    const bubble = bubbles.find(b => b.row === r && b.col === c);
+    if (!bubble || bubble.color !== color) return;
+    
+    matches.push(bubble);
+    
+    const neighbors = getNeighbors(r, c);
+    neighbors.forEach(([nr, nc]) => findMatches(nr, nc));
+  }
+  
+  findMatches(row, col);
+  
+  if (matches.length >= 3) {
+    matches.forEach(match => {
+      const index = bubbles.indexOf(match);
+      if (index > -1) bubbles.splice(index, 1);
+    });
+    
+    score += matches.length * 10 * level;
+    removeFloatingBubbles();
+    updateUI();
+  }
+}
+
+function getNeighbors(row, col) {
+  const isOddRow = row % 2 === 1;
+  const offsets = isOddRow ? 
+    [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]] :
+    [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]];
+  
+  return offsets
+    .map(([dr, dc]) => [row + dr, col + dc])
+    .filter(([r, c]) => r >= 0 && r < ROWS && c >= 0 && c < COLS);
+}
+
+function removeFloatingBubbles() {
+  const connected = new Set();
+  
+  function markConnected(row, col) {
+    const key = `${row},${col}`;
+    if (connected.has(key)) return;
+    
+    const bubble = bubbles.find(b => b.row === row && b.col === col);
+    if (!bubble) return;
+    
+    connected.add(key);
+    
+    const neighbors = getNeighbors(row, col);
+    neighbors.forEach(([r, c]) => markConnected(r, c));
+  }
+  
+  bubbles.filter(b => b.row === 0).forEach(b => markConnected(b.row, b.col));
+  
+  const floating = bubbles.filter(b => !connected.has(`${b.row},${b.col}`));
+  floating.forEach(f => {
+    const index = bubbles.indexOf(f);
+    if (index > -1) bubbles.splice(index, 1);
+  });
+  
+  if (floating.length > 0) {
+    score += floating.length * 20 * level;
+  }
+}
+
+function checkGameOver() {
+  const maxRow = Math.max(...bubbles.map(b => b.row), 0);
+  if (maxRow >= ROWS - 2) {
+    isGameOver = true;
+    if (score > best) {
+      best = score;
+      localStorage.setItem('bubbleBest', best);
+    }
+    showGameOver();
+  }
+  
+  if (bubbles.length === 0) {
+    level++;
+    score += 100 * level;
+    resetGame();
+  }
+}
+
+function showGameOver() {
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalBest').textContent = best;
+  document.getElementById('gameOver').style.display = 'flex';
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  document.getElementById('pauseBtn').textContent = isPaused ? 'Resume' : 'Pause';
+}
+
+function updateUI() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('best').textContent = best;
+  document.getElementById('level').textContent = level;
+  updateNextBubble();
+}
+
+function updateNextBubble() {
+  const preview = document.getElementById('nextBubblePreview');
+  preview.style.background = shooter.nextColor;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  bubbles.forEach(bubble => {
+    ctx.beginPath();
+    ctx.arc(bubble.x, bubble.y, BUBBLE_RADIUS, 0, Math.PI * 2);
+    ctx.fillStyle = bubble.color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+  
+  animatingBubbles.forEach(bubble => {
+    ctx.beginPath();
+    ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+    ctx.fillStyle = bubble.color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+  
+  ctx.beginPath();
+  ctx.arc(shooter.x, shooter.y, BUBBLE_RADIUS, 0, Math.PI * 2);
+  ctx.fillStyle = shooter.color;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  if (!isGameOver && !isPaused) {
+    ctx.beginPath();
+    ctx.moveTo(shooter.x, shooter.y);
+    ctx.lineTo(
+      shooter.x + Math.cos(shooter.angle) * 100,
+      shooter.y + Math.sin(shooter.angle) * 100
+    );
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+function gameLoop() {
+  if (!isPaused && !isGameOver) {
+    updateBubbles();
+  }
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+  </script>
 </body>
 </html>
