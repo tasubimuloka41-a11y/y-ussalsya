@@ -28,14 +28,10 @@
         
         #score {
             color: white;
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: bold;
             margin: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
         }
     </style>
 </head>
@@ -56,6 +52,7 @@
         let angle = -Math.PI / 2;
         let shooting = false;
         let shooterBubble = null;
+        let bgOffset = 0;
         
         const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
         const emojis = ['😀', '😎', '🥳', '😍', '🤩', '😜', '🤗', '😊'];
@@ -91,13 +88,13 @@
                 ctx.fill();
                 
                 // Shine effect
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
                 ctx.beginPath();
-                ctx.arc(-5, -5, 5, 0, Math.PI * 2);
+                ctx.arc(-5, -5, 6, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Emoji
-                ctx.font = '20px Arial';
+                // Emoji - BIGGER!
+                ctx.font = 'bold 35px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(this.emoji, 0, 0);
@@ -111,9 +108,33 @@
             }
             
             popAnimation() {
-                this.scale += 0.1;
+                this.scale += 0.15;
                 this.opacity -= 0.1;
                 return this.opacity <= 0;
+            }
+        }
+        
+        function drawBackground() {
+            // Animated stars background
+            bgOffset += 0.2;
+            
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0f0c29');
+            gradient.addColorStop(0.5, '#302b63');
+            gradient.addColorStop(1, '#24243e');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Stars
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            for (let i = 0; i < 50; i++) {
+                const x = (i * 97 + bgOffset * 2) % canvas.width;
+                const y = (i * 71) % canvas.height;
+                const size = (i % 3) * 0.5 + 0.5;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
         
@@ -138,12 +159,15 @@
         
         function drawShooter() {
             // Arrow line
-            ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+            ctx.lineWidth = 3;
+            ctx.shadowColor = 'rgba(255,255,255,0.5)';
+            ctx.shadowBlur = 10;
             ctx.beginPath();
             ctx.moveTo(shooter.x, shooter.y);
-            ctx.lineTo(shooter.x + Math.cos(angle) * 50, shooter.y + Math.sin(angle) * 50);
+            ctx.lineTo(shooter.x + Math.cos(angle) * 60, shooter.y + Math.sin(angle) * 60);
             ctx.stroke();
+            ctx.shadowBlur = 0;
             
             // Shooter bubble
             const gradient = ctx.createRadialGradient(shooter.x, shooter.y, 0, shooter.x, shooter.y, shooter.radius);
@@ -155,7 +179,8 @@
             ctx.arc(shooter.x, shooter.y, shooter.radius, 0, Math.PI * 2);
             ctx.fill();
             
-            ctx.font = '20px Arial';
+            // Emoji - BIGGER!
+            ctx.font = 'bold 35px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(shooter.emoji, shooter.x, shooter.y);
@@ -262,7 +287,8 @@
         }
         
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Beautiful animated background instead of clearRect
+            drawBackground();
             
             // Draw all bubbles
             for (let bubble of bubbles) {
