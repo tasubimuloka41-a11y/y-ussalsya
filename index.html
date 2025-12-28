@@ -6,105 +6,26 @@
     <title>Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             height: 100vh;
             overflow: hidden;
-            position: relative;
         }
 
-        /* Молния */
-        .lightning {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            opacity: 0;
-            z-index: 1000;
-        }
-
-        .lightning-flash {
-            position: absolute;
-            width: 4px;
-            background: linear-gradient(to bottom, #fff, #a8c0ff, transparent);
-            box-shadow: 0 0 20px #fff, 0 0 40px #a8c0ff, 0 0 60px #667eea;
-            animation: lightning-strike 0.15s ease-out;
-        }
-
-        .screen-flash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        @keyframes lightning-strike {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            20% { opacity: 0; }
-            30% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        @keyframes flash {
-            0% { opacity: 0; }
-            5% { opacity: 0.9; }
-            10% { opacity: 0; }
-            15% { opacity: 1; }
-            100% { opacity: 0; }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
 </head>
 <body>
-    <div class="screen-flash" id="screenFlash"></div>
-    <div class="lightning" id="lightning"></div>
-
-    <script>
-        function createLightning() {
-            const lightning = document.getElementById('lightning');
-            const screenFlash = document.getElementById('screenFlash');
-            
-            const numBranches = Math.random() * 3 + 2;
-            const startX = Math.random() * window.innerWidth;
-            
-            lightning.innerHTML = '';
-            
-            for (let i = 0; i < numBranches; i++) {
-                const branch = document.createElement('div');
-                branch.className = 'lightning-flash';
-                
-                const height = (Math.random() * 300 + 200) + 'px';
-                const left = (startX + (Math.random() - 0.5) * 100) + 'px';
-                const top = (Math.random() * 50) + 'px';
-                const rotation = (Math.random() - 0.5) * 30 + 'deg';
-                
-                branch.style.height = height;
-                branch.style.left = left;
-                branch.style.top = top;
-                branch.style.transform = `rotate(${rotation})`;
-                
-                lightning.appendChild(branch);
-            }
-            
-            screenFlash.style.animation = 'flash 0.3s ease-out';
-            
-            setTimeout(() => {
-                screenFlash.style.animation = '';
-            }, 300);
-            
-            const nextStrike = Math.random() * 5000 + 2000;
-            setTimeout(createLightning, nextStrike);
-        }
-        
-        setTimeout(createLightning, 2000);
-    </script>
 </body>
 </html>
