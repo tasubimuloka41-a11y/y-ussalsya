@@ -1,0 +1,404 @@
+
+
+Я УССАЛСЯ 💦
+
+Инструкции
+
+ПРОЕКТ: Tap-to-Earn игра "Я УССАЛСЯ" 💦 для Telegram Mini App ═══════════════════════════════════════ 🎮 ЧТО ЭТО? ═══════════════════════════════════════ Простая вирусная tap-to-earn игра в стиле Comedy Club с матерным юмором. Полностью клиентская (HTML+CSS+JS), без бэкенда, без API, без серверов. ═══════════════════════════════════════ ✅ РЕАЛИЗОВАНО: ═══════════════════════════════════════ 1. 🖱️ КЛИКЕР - тапы по розовому кругу 💦 2. 💾 СОХРАНЕНИЕ - localStorage (счётчик, тапы, лидерборд) 3. 🎨 АНИМАЦИИ - +1 улетают, пульсация, эффекты свечения 4. 🏆 ЛИДЕРБОРД - топ-10 локально в localStorage 5. 🔗 РЕФЕРАЛКИ - через tgWebApp.initDataUnsafe.start_param (+1000 бонус) 6. 💰 TON WALLET - кнопка подключения (заглушка для будущего) 7. 📊 УРОВНИ - от "Обоссанный новичок" до "Бог мочи" 8. 😂 ЮМОР - матерные шутки в стиле Comedy Club ═══════════════════════════════════════ 📁 КОД: ═══════════════════════════════════════ Полный index.html файл готов к заливке на GitHub Pages. Всё работает через Telegram WebApp API. ═══════════════════════════════════════ 🚀 КАК ЗАПУСТИТЬ: ═══════════════════════════════════════ 1. Сохранить код как index.html 2. Залить на GitHub Pages (или любой статический хостинг) 3. В боте @sebastyan_bot через BotFather → Web Apps → указать URL 4. Готово! Игра работает 🔥 ═══════════════════════════════════════ 🎯 ОСОБЕННОСТИ: ═══════════════════════════════════════ • Никаких серверов - всё клиентское • Никаких API ключей • Никаких баз данных • Работает оффлайн после первой загрузки • Сохраняет прогресс в браузере • Реферальная система встроена • Готово к интеграции с TON Wallet ═══════════════════════════════════════ 💡 БУДУЩИЕ УЛУЧШЕНИЯ: ═══════════════════════════════════════ • Реальная интеграция TON Connect • Jetton токены для вывода • Смарт-контракт для airdrop'а • Мультиплеер через P2P • Больше анимаций и звуков ═══════════════════════════════════════ 🔥 ВИРУСНОСТЬ: ═══════════════════════════════════════ Простой кликер + рефералки + обещание токенов = ВИРУС! Люди клюют как голодные хомяки на сыр 🐹💦
+Источники
+Разговоры
+
+Файлы
+1
+вставленный-текст.txt
+Прикрепить к проекту
+Перетащите сюда, чтобы добавить файлы в проект
+Создай подробную пошаговую инструкцию по развёртыванию index.html на GitHub Pages и подключению к боту @sebastyan_bot через BotFather.
+Инструкция должна быть:
+
+Подробной с конкретными шагами
+С описанием каждого клика и действия
+С указанием на возможные ошибки и их решения
+Для новичков (полная подробность)
+ПРОЕКТ: Tap-to-Earn игра "Я УССАЛСЯ" 💦 для Telegram Mini App
+
+═══════════════════════════════════════
+🚀 ПОЛНАЯ ИНСТРУКЦИЯ ДЛЯ НОВИЧКОВ
+Разворачиваем игру на GitHub Pages и подключаем к боту @sebastyan_bot
+(2025 год — актуально на декабрь)
+
+═══════════════════════════════════════
+
+ЧАСТЬ 1. Разворачиваем index.html на GitHub Pages
+Шаг 1 — Создаём репозиторий на GitHub
+Заходим на https://github.com (войди в аккаунт или зарегистрируйся, если ещё нет)
+В правом верхнем углу жмём + → New repository
+Repository name → пишем что угодно на латинице, например:
+y-ussalsya или piss-tap-game (рекомендую короткое и понятное)
+Public (обязательно публичный!)
+Галочка Add a README file — не ставь, не нужно
+Жмём зелёную кнопку Create repository
+Шаг 2 — Загружаем index.html
+На странице репозитория жмём Add file → Create new file
+В поле имени файла пишем ровно:
+index.html (строго маленькими буквами!)
+Вставляем весь код из твоего файла (весь HTML от <!DOCTYPE html> до </html>)
+Внизу жмём зелёную кнопку Commit new file
+(можно оставить сообщение по умолчанию или написать «Initial game version»)
+Шаг 3 — Включаем GitHub Pages
+Переходим во вкладку Settings (справа вверху)
+В левом меню прокручиваем вниз до раздела Pages (в разделе Code and automation)
+В блоке Source:
+Branch: выбираем main (или master, если у тебя так называется)
+Folder: оставляем / (root)
+Жмём Save
+Через 10–60 секунд (иногда до 5 минут) в этом же блоке появится зелёная строка:
+Your site is live at https://твой_ник.github.io/название_репозитория/
+Важно: URL будет примерно таким:
+https://ivanov123.github.io/y-ussalsya/
+Скопируй его полностью — он нам понадобится!
+
+Возможные ошибки и решения:
+Сайт не появляется >5 минут → обнови страницу Settings или подожди 10 мин. GitHub иногда тормозит.
+404 Not Found → убедись, что файл называется index.html (строго так, не Index.html и не game.html).
+Страница белая или ошибка → проверь, что весь код скопирован правильно (особенно <script src="https://telegram.org/js/telegram-web-app.js"></script>).
+═══════════════════════════════════════
+
+ЧАСТЬ 2. Подключаем игру к боту @sebastyan_bot через BotFather
+Шаг 1 — Заходим в @BotFather
+Открой Telegram
+Найди бота @BotFather (официальный отец всех ботов)
+Напиши ему /mybots и отправь
+Шаг 2 — Выбираем бота
+BotFather покажет список твоих ботов
+Выбери @sebastyan_bot (нажми на него)
+Шаг 3 — Настраиваем Mini App (Web App)
+BotFather предложит меню. Нажми Bot Settings
+Затем Menu Button (или Configure menu button)
+Выбери Configure menu button или Specify/Edit menu button URL
+BotFather попросит ввести URL твоей игры. Вставь тот адрес, который получил из GitHub Pages:
+Пример: https://ivanov123.github.io/y-ussalsya/
+Отправь
+Шаг 4 — Проверяем
+BotFather скажет что-то вроде:
+Menu button updated successfully!
+Теперь зайди в чат с @sebastyan_bot
+Внизу слева (рядом с полем ввода) появится красивая кнопка (обычно "Запустить" или "Играть" или "Я УССАЛСЯ 💦")
+Нажми — должна открыться твоя игра прямо внутри Telegram!
+Альтернативный способ (если хочешь отдельную ссылку вида t.me/sebastyan_bot/app):
+В @BotFather напиши /myapps
+Выбери @sebastyan_bot
+Нажми Create new app или Edit existing
+Укажи:
+Web App URL → тот же адрес с GitHub Pages
+Short name → например ussalsya (3–30 символов, только a-z0-9_)
+Сохрани
+Теперь игра будет доступна по прямой ссылке:
+https://t.me/sebastyan_bot/ussalsya
+═══════════════════════════════════════
+
+Финальная проверка и советы
+Открой игру через бот — убедись, что tg.initDataUnsafe работает (реферальная система, имя пользователя и т.д.)
+Если рефералки не работают → проверь, что в коде правильно указано botUsername = 'sebastyan_bot';
+Обновление игры: просто редактируй index.html в репозитории → GitHub Pages обновится автоматически за 1–5 минут
+Готово!
+Твоя матерная tap-to-earn игра уже в Telegram и готова взрывать чарты 🔥💦
+
+Люди клюют как голодные хомяки на сыр 🐹💦
+
+2,7с
+Web page favicon
+Web page favicon
+Web page favicon
+sources
+
+
+
+Прикрепить к сообщению
+Перетащи сюда, чтобы добавить файлы в своё сообщение
+вставленный-текст.txt
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Я УССАЛСЯ 💦</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e0033, #4a00e0);
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: 2.8rem;
+      text-shadow: 0 0 20px #ff00aa;
+      animation: pulse 2s infinite;
+    }
+
+    #score {
+      font-size: 4.5rem;
+      font-weight: bold;
+      margin: 0;
+      text-shadow: 0 0 30px #00ffff;
+    }
+
+    #tapArea {
+      width: 280px;
+      height: 280px;
+      margin: 20px auto;
+      background: radial-gradient(circle, #ff00aa, #aa00ff);
+      border-radius: 50%;
+      box-shadow: 0 0 40px #ff00aa, inset 0 0 30px #ffffff44;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      cursor: pointer;
+      transition: transform 0.1s;
+      user-select: none;
+    }
+
+    #tapArea:active {
+      transform: scale(0.92);
+      box-shadow: 0 0 60px #00ffff;
+    }
+
+    #stats {
+      margin: 15px 0;
+      font-size: 1.3rem;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    #leaderboard {
+      margin-top: 20px;
+      width: 90%;
+      max-width: 400px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    #leaderboard h2 {
+      margin: 0 0 10px;
+      font-size: 1.6rem;
+      text-align: center;
+      color: #00ffff;
+    }
+
+    .leader-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid #ffffff33;
+      font-size: 1.2rem;
+    }
+
+    .leader-item:last-child { border-bottom: none; }
+
+    #connectBtn {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      background: #00ff88;
+      color: black;
+      border: none;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    #refLink {
+      margin: 15px 0;
+      font-size: 1.1rem;
+      word-break: break-all;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .particles {
+      position: absolute;
+      pointer-events: none;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      animation: floatUp 1.2s forwards;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-120px); opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Я УССАЛСЯ 💦</h1>
+
+  <div id="score">0</div>
+  <div id="stats">Уровень: Обоссанный новичок</div>
+
+  <div id="tapArea">💦 ТАПАЙ 💦</div>
+
+  <div id="refLink"></div>
+
+  <button id="connectBtn">Подключить TON-кошелёк (для будущего вывода)</button>
+
+  <div id="leaderboard">
+    <h2>Топ обоссанных</h2>
+    <div id="leaderList"></div>
+  </div>
+
+  <!-- Particles container -->
+  <div id="particles"></div>
+
+  <script>
+    // ==============================================
+    //         Я УССАЛСЯ - TAP TO EARN MINI APP
+    // ==============================================
+
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    // ==============================================
+    //               СОХРАНЕНИЕ
+    // ==============================================
+    let score = parseInt(localStorage.getItem('pissScore') || '0');
+    let taps = parseInt(localStorage.getItem('pissTaps') || '0');
+    let username = tg.initDataUnsafe?.user?.username || tg.initDataUnsafe?.user?.first_name || 'Анонимный ссыкун';
+
+    const scoreEl = document.getElementById('score');
+    const statsEl = document.getElementById('stats');
+    const tapArea = document.getElementById('tapArea');
+    const particlesContainer = document.getElementById('particles');
+    const leaderList = document.getElementById('leaderList');
+    const connectBtn = document.getElementById('connectBtn');
+
+    // ==============================================
+    //             РЕФЕРАЛКА
+    // ==============================================
+    const refLinkEl = document.getElementById('refLink');
+    const botUsername = 'sebastyan_bot';
+    const myRefCode = tg.initDataUnsafe?.start_param || null;
+
+    // Если пришли по рефералке — +1000 к старту (для мотивации)
+    if (myRefCode && !localStorage.getItem('refClaimed')) {
+      score += 1000;
+      localStorage.setItem('pissScore', score);
+      localStorage.setItem('refClaimed', 'true');
+      alert('Спасибо что пришёл по рефке! +1000 литров мочи в подарок 💦');
+    }
+
+    // Ссылка для шаринга
+    const shareLink = `https://t.me/${botUsername}?start=${tg.initDataUnsafe?.user?.id || 'anon'}`;
+    refLinkEl.innerHTML = `Зови друзей и получай +500 за каждого:<br><b>${shareLink}</b>`;
+
+    // ==============================================
+    //             ЛИДЕРБОРД (локальный)
+    // ==============================================
+    function updateLeaderboard() {
+      let leaders = JSON.parse(localStorage.getItem('pissLeaders') || '[]');
+
+      // Добавляем/обновляем себя
+      const me = { name: username, score };
+      leaders = leaders.filter(l => l.name !== username);
+      leaders.push(me);
+      leaders.sort((a,b) => b.score - a.score);
+      leaders = leaders.slice(0, 10); // топ-10
+
+      localStorage.setItem('pissLeaders', JSON.stringify(leaders));
+
+      // Рендерим
+      leaderList.innerHTML = '';
+      leaders.forEach((l, i) => {
+        const div = document.createElement('div');
+        div.className = 'leader-item';
+        div.innerHTML = `<span>${i+1}. ${l.name}</span><span>${l.score.toLocaleString()} 💦</span>`;
+        leaderList.appendChild(div);
+      });
+    }
+
+    // ==============================================
+    //               ТАП ТАП ТАП
+    // ==============================================
+    function tap() {
+      score += 1;
+      taps += 1;
+      localStorage.setItem('pissScore', score);
+      localStorage.setItem('pissTaps', taps);
+
+      scoreEl.textContent = score.toLocaleString();
+
+      // Обновляем уровень
+      let level = 'Обоссанный новичок';
+      if (score > 10000) level = 'Профессиональный ссыкун';
+      if (score > 50000) level = 'Мореман';
+      if (score > 200000) level = 'Король луж';
+      if (score > 1000000) level = 'Бог мочи';
+      statsEl.textContent = `Уровень: ${level} (${taps} тапов)`;
+
+      // Анимация +1
+      const particle = document.createElement('div');
+      particle.className = 'particles';
+      particle.textContent = '+1';
+      particle.style.left = `${Math.random()*100}%`;
+      particle.style.top = `${Math.random()*100}%`;
+      particlesContainer.appendChild(particle);
+
+      setTimeout(() => particle.remove(), 1500);
+
+      updateLeaderboard();
+    }
+
+    tapArea.addEventListener('click', tap);
+    tapArea.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      tap();
+    }, { passive: false });
+
+    // ==============================================
+    //           TON CONNECT (просто заглушка)
+    // ==============================================
+    connectBtn.addEventListener('click', () => {
+      alert('Пиздец, TON-кошелёк подключён! Теперь ты можешь вывести свои литры мочи… когда-нибудь… может быть… 😂💦');
+      connectBtn.textContent = 'TON подключён 🔥';
+      connectBtn.disabled = true;
+      connectBtn.style.background = '#00aa66';
+    });
+
+    // ==============================================
+    //               ЗАПУСК
+    // ==============================================
+    scoreEl.textContent = score.toLocaleString();
+    updateLeaderboard();
+
+    // Если первый запуск — приветствие
+    if (!localStorage.getItem('pissWelcome')) {
+      setTimeout(() => {
+        alert('Добро пожаловать в "Я УССАЛСЯ"!\nТапай по яйцам, пока не обоссышься! 💦\nВсё сохраняется в браузере, так что не чисти кэш, ленивая жопа!');
+        localStorage.setItem('pissWelcome', 'true');
+      }, 500);
+    }
+  </script>
+</body>
+</html>
+Улучшить до SuperGrok
+Я УССАЛСЯ 💦 - Grok
