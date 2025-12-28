@@ -95,5 +95,84 @@
         <div class="kite-body"></div>
         <div class="tail"></div>
     </div>
+
+    <!-- Интерактивные карточки -->
+    <div class="cards-container" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 1000;">
+        <div class="card" onclick="showModal(1)" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="font-size: 50px; text-align: center;">😳</div>
+            <div style="color: white; text-align: center; font-weight: bold; margin-top: 10px;">Смущение</div>
+        </div>
+        
+        <div class="card" onclick="showModal(2)" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="font-size: 50px; text-align: center;">💧</div>
+            <div style="color: white; text-align: center; font-weight: bold; margin-top: 10px;">Капля</div>
+        </div>
+        
+        <div class="card" onclick="showModal(3)" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="font-size: 50px; text-align: center;">🧻</div>
+            <div style="color: #333; text-align: center; font-weight: bold; margin-top: 10px;">Туалет</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;" onclick="closeModal()">
+        <div style="background: white; padding: 40px; border-radius: 30px; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);" onclick="event.stopPropagation()">
+            <div id="modalEmoji" style="font-size: 100px; margin-bottom: 20px;"></div>
+            <h2 id="modalTitle" style="color: #333; margin-bottom: 15px;"></h2>
+            <p id="modalText" style="color: #666; font-size: 18px; line-height: 1.6;"></p>
+            <button onclick="closeModal()" style="margin-top: 20px; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Кнопка -->
+    <button id="peeBTN" style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); padding: 20px 40px; font-size: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); font-weight: bold; z-index: 1000; transition: transform 0.2s;">Я УССАЛСЯ</button>
+
+    <script>
+        const modalData = {
+            1: {
+                emoji: '😳',
+                title: 'Смущение',
+                text: 'Это совершенно нормально! Каждый человек иногда попадает в неловкие ситуации. Не стесняйтесь – это часть жизни!'
+            },
+            2: {
+                emoji: '💧',
+                title: 'Капля знаний',
+                text: 'Вода – это жизнь! Пейте больше воды и заботьтесь о своем здоровье. Гидратация – ключ к хорошему самочувствию!'
+            },
+            3: {
+                emoji: '🧻',
+                title: 'Туалетный юмор',
+                text: 'Всегда имейте запас туалетной бумаги! Это один из самых важных предметов в жизни. Будьте готовы ко всему!'
+            }
+        };
+
+        function showModal(id) {
+            const data = modalData[id];
+            document.getElementById('modalEmoji').textContent = data.emoji;
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalText').textContent = data.text;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Кнопка "Я УССАЛСЯ"
+        const peeBTN = document.getElementById('peeBTN');
+        
+        peeBTN.addEventListener('click', function() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.showAlert('Я УССАЛСЯ! 🙊😱');
+            } else {
+                alert('Я УССАЛСЯ! 🙊😱');
+            }
+            
+            peeBTN.style.transform = 'translateX(-50%) scale(0.9)';
+            setTimeout(() => {
+                peeBTN.style.transform = 'translateX(-50%) scale(1)';
+            }, 200);
+        });
+    </script>
 </body>
 </html>
