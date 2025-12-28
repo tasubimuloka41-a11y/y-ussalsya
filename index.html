@@ -6,88 +6,138 @@
     <title>Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        perspective: 1000px;
-      }
-      
-      .kite {
-        width: 200px;
-        height: 200px;
-        position: relative;
-        animation: fly 8s ease-in-out infinite, rotate3d 6s linear infinite;
-        transform-style: preserve-3d;
-      }
-      
-      .kite-body {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #9b59b6, #ff0080);
-        background-size: 400% 400%;
-        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-        animation: rainbow 3s ease infinite;
-        box-shadow: 0 0 60px rgba(255,0,128,0.8), 0 0 100px rgba(64,224,208,0.6), inset 0 0 40px rgba(255,255,255,0.3);
-        transform: translateZ(50px);
-      }
-      
-      .tail {
-        position: absolute;
-        bottom: -150px;
-        left: 50%;
-        width: 3px;
-        height: 150px;
-        background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
-        transform-origin: top;
-        animation: tailWave 2s ease-in-out infinite;
-      }
-      
-      .tail::before, .tail::after {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: linear-gradient(45deg, #ff0080, #40e0d0);
-        border-radius: 50%;
-        box-shadow: 0 0 20px rgba(255,0,128,0.8);
-      }
-      
-      .tail::before { top: 30%; left: -10px; animation: bow 1.5s ease-in-out infinite; }
-      .tail::after { top: 60%; left: -10px; animation: bow 1.5s ease-in-out infinite 0.3s; }
-      
-      @keyframes fly {
-        0%, 100% { transform: translate(0, 0) translateZ(0); }
-        25% { transform: translate(60px, -40px) translateZ(30px); }
-        50% { transform: translate(0, -80px) translateZ(60px); }
-        75% { transform: translate(-60px, -40px) translateZ(30px); }
-      }
-      
-      @keyframes rotate3d {
-        0% { transform: rotateY(0deg) rotateX(0deg); }
-        50% { transform: rotateY(180deg) rotateX(10deg); }
-        100% { transform: rotateY(360deg) rotateX(0deg); }
-      }
-      
-      @keyframes rainbow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
-      @keyframes tailWave {
-        0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(15deg); }
-      }
-      
-      @keyframes bow {
-        0%, 100% { transform: scale(1) translateX(0); }
-        50% { transform: scale(1.2) translateX(5px); }
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        /* Воздушный змей */
+        .kite {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            animation: fly 8s ease-in-out infinite, rotate3d 6s linear infinite;
+            transform-style: preserve-3d;
+        }
+
+        .kite-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #9b59b6, #ff0080);
+            background-size: 400% 400%;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            animation: rainbow 3s ease infinite;
+            box-shadow: 0 0 60px rgba(255, 0, 128, 0.8), 0 0 100px rgba(64, 224, 208, 0.6), inset 0 0 40px rgba(255, 255, 255, 0.3);
+            transform: translateZ(50px);
+        }
+
+        .tail {
+            position: absolute;
+            bottom: -150px;
+            left: 50%;
+            width: 3px;
+            height: 150px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+            transform-origin: top;
+            animation: tailWave 2s ease-in-out infinite;
+        }
+
+        .tail::before, .tail::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #ff0080, #40e0d0);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
+        }
+
+        .tail::before { top: 30%; left: -10px; animation: bow 1.5s ease-in-out infinite; }
+        .tail::after { top: 60%; left: -10px; animation: bow 1.5s ease-in-out infinite 0.3s; }
+
+        /* Молния */
+        .lightning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1000;
+        }
+
+        .lightning-flash {
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to bottom, #fff, #a8c0ff, transparent);
+            box-shadow: 0 0 20px #fff, 0 0 40px #a8c0ff, 0 0 60px #667eea;
+            animation: lightning-strike 0.15s ease-out;
+        }
+
+        .screen-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes fly {
+            0%, 100% { transform: translate(0, 0) translateZ(0); }
+            25% { transform: translate(60px, -40px) translateZ(30px); }
+            50% { transform: translate(0, -80px) translateZ(60px); }
+            75% { transform: translate(-60px, -40px) translateZ(30px); }
+        }
+
+        @keyframes rotate3d {
+            0% { transform: rotateY(0deg) rotateX(0deg); }
+            50% { transform: rotateY(180deg) rotateX(10deg); }
+            100% { transform: rotateY(360deg) rotateX(0deg); }
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes tailWave {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(15deg); }
+        }
+
+        @keyframes bow {
+            0%, 100% { transform: scale(1) translateX(0); }
+            50% { transform: scale(1.2) translateX(5px); }
+        }
+
+        @keyframes lightning-strike {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            20% { opacity: 0; }
+            30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            5% { opacity: 0.9; }
+            10% { opacity: 0; }
+            15% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -96,83 +146,51 @@
         <div class="tail"></div>
     </div>
 
-    <!-- Интерактивные карточки -->
-    <div class="cards-container" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 1000;">
-        <div class="card" onclick="showModal(1)" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <div style="font-size: 50px; text-align: center;">😳</div>
-            <div style="color: white; text-align: center; font-weight: bold; margin-top: 10px;">Смущение</div>
-        </div>
-        
-        <div class="card" onclick="showModal(2)" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <div style="font-size: 50px; text-align: center;">💧</div>
-            <div style="color: white; text-align: center; font-weight: bold; margin-top: 10px;">Капля</div>
-        </div>
-        
-        <div class="card" onclick="showModal(3)" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            <div style="font-size: 50px; text-align: center;">🧻</div>
-            <div style="color: #333; text-align: center; font-weight: bold; margin-top: 10px;">Туалет</div>
-        </div>
-    </div>
-
-    <!-- Модальное окно -->
-    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;" onclick="closeModal()">
-        <div style="background: white; padding: 40px; border-radius: 30px; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);" onclick="event.stopPropagation()">
-            <div id="modalEmoji" style="font-size: 100px; margin-bottom: 20px;"></div>
-            <h2 id="modalTitle" style="color: #333; margin-bottom: 15px;"></h2>
-            <p id="modalText" style="color: #666; font-size: 18px; line-height: 1.6;"></p>
-            <button onclick="closeModal()" style="margin-top: 20px; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold;">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- Кнопка -->
-    <button id="peeBTN" style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); padding: 20px 40px; font-size: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); font-weight: bold; z-index: 1000; transition: transform 0.2s;">Я УССАЛСЯ</button>
+    <div class="screen-flash" id="screenFlash"></div>
+    <div class="lightning" id="lightning"></div>
 
     <script>
-        const modalData = {
-            1: {
-                emoji: '😳',
-                title: 'Смущение',
-                text: 'Это совершенно нормально! Каждый человек иногда попадает в неловкие ситуации. Не стесняйтесь – это часть жизни!'
-            },
-            2: {
-                emoji: '💧',
-                title: 'Капля знаний',
-                text: 'Вода – это жизнь! Пейте больше воды и заботьтесь о своем здоровье. Гидратация – ключ к хорошему самочувствию!'
-            },
-            3: {
-                emoji: '🧻',
-                title: 'Туалетный юмор',
-                text: 'Всегда имейте запас туалетной бумаги! Это один из самых важных предметов в жизни. Будьте готовы ко всему!'
-            }
-        };
-
-        function showModal(id) {
-            const data = modalData[id];
-            document.getElementById('modalEmoji').textContent = data.emoji;
-            document.getElementById('modalTitle').textContent = data.title;
-            document.getElementById('modalText').textContent = data.text;
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        // Кнопка "Я УССАЛСЯ"
-        const peeBTN = document.getElementById('peeBTN');
-        
-        peeBTN.addEventListener('click', function() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.showAlert('Я УССАЛСЯ! 🙊😱');
-            } else {
-                alert('Я УССАЛСЯ! 🙊😱');
+        function createLightning() {
+            const lightning = document.getElementById('lightning');
+            const screenFlash = document.getElementById('screenFlash');
+            
+            // Создаем случайную молнию
+            const numBranches = Math.random() * 3 + 2;
+            const startX = Math.random() * window.innerWidth;
+            
+            lightning.innerHTML = '';
+            
+            for (let i = 0; i < numBranches; i++) {
+                const branch = document.createElement('div');
+                branch.className = 'lightning-flash';
+                
+                const height = (Math.random() * 300 + 200) + 'px';
+                const left = (startX + (Math.random() - 0.5) * 100) + 'px';
+                const top = (Math.random() * 50) + 'px';
+                const rotation = (Math.random() - 0.5) * 30 + 'deg';
+                
+                branch.style.height = height;
+                branch.style.left = left;
+                branch.style.top = top;
+                branch.style.transform = `rotate(${rotation})`;
+                
+                lightning.appendChild(branch);
             }
             
-            peeBTN.style.transform = 'translateX(-50%) scale(0.9)';
+            // Вспышка экрана
+            screenFlash.style.animation = 'flash 0.3s ease-out';
+            
             setTimeout(() => {
-                peeBTN.style.transform = 'translateX(-50%) scale(1)';
-            }, 200);
-        });
+                screenFlash.style.animation = '';
+            }, 300);
+            
+            // Следующая молния через случайное время
+            const nextStrike = Math.random() * 5000 + 2000;
+            setTimeout(createLightning, nextStrike);
+        }
+        
+        // Первая молния через 2 секунды
+        setTimeout(createLightning, 2000);
     </script>
 </body>
 </html>
