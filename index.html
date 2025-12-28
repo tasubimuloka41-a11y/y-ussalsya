@@ -1,140 +1,222 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Кликер</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',Tahoma,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;user-select:none}
-.container{max-width:800px;width:100%;padding:20px}
-.header{text-align:center;margin-bottom:30px}
-.header h1{font-size:2rem;font-weight:600;color:#fff}
-.score{font-size:3.5rem;font-weight:700;color:#4CAF50;margin:10px 0}
-.stats{display:flex;gap:20px;justify-content:center;margin:10px 0;font-size:0.9rem;color:#888}
-.clicker{width:200px;height:200px;margin:30px auto;background:linear-gradient(135deg,#1e88e5,#1565c0);border-radius:50%;border:3px solid #0d47a1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;transition:transform 0.1s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(30,136,229,0.5)}
-.clicker:active{transform:scale(0.95);box-shadow:0 2px 10px rgba(30,136,229,0.3)}
-.upgrades{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:30px}
-.upgrade{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:15px;cursor:pointer;transition:all 0.2s}
-.upgrade:hover{background:#222;border-color:#4CAF50;transform:translateY(-2px)}
-.upgrade.locked{opacity:0.5;cursor:not-allowed;pointer-events:none}
-.upgrade-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.upgrade-name{font-size:1.1rem;font-weight:600;color:#fff}
-.upgrade-level{font-size:0.85rem;color:#4CAF50;background:#1a3a1a;padding:2px 8px;border-radius:4px}
-.upgrade-desc{font-size:0.85rem;color:#888;margin:5px 0}
-.upgrade-cost{font-size:1rem;font-weight:600;color:#FFC107;margin-top:8px}
-.prestiges{text-align:center;margin-top:30px;padding:20px;background:#1a1a1a;border-radius:8px;border:1px solid #333}
-.prestige-btn{background:#d32f2f;color:#fff;border:none;padding:12px 30px;font-size:1.1rem;font-weight:600;border-radius:6px;cursor:pointer;margin-top:10px;transition:all 0.2s}
-.prestige-btn:hover{background:#b71c1c;transform:scale(1.05)}
-.prestige-btn:disabled{background:#555;cursor:not-allowed;opacity:0.5}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Пиздец-Кликер 🔥</title>
+  <style>
+    :root {
+      --bg: #0d001a;
+      --accent: #8b00ff;
+      --accent-dark: #5a00a8;
+      --text: #e0d0ff;
+      --card: #1a0033;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px var(--accent);
+      color: var(--accent);
+    }
+    #score {
+      font-size: 4rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 30px var(--accent);
+    }
+    #main-click {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #2a004d, #000);
+      border: 8px solid var(--accent);
+      box-shadow: 0 0 40px rgba(139,0,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 2rem;
+    }
+    #main-click:active {
+      transform: scale(0.92);
+      box-shadow: 0 0 60px rgba(139,0,255,0.9);
+    }
+    .icon {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 15px rgba(139,0,255,0.7));
+    }
+    .shop {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      width: 90%;
+      max-width: 1200px;
+      padding: 2rem;
+    }
+    .item {
+      background: var(--card);
+      border: 2px solid var(--accent-dark);
+      border-radius: 16px;
+      padding: 1.2rem;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(139,0,255,0.4);
+      border-color: var(--accent);
+    }
+    .item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 0.8rem;
+    }
+    .item-name {
+      font-size: 1.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .item-cost {
+      font-size: 1.2rem;
+      color: #ffcc00;
+    }
+    .item-owned {
+      font-size: 1rem;
+      color: #00ff88;
+      margin-top: 0.5rem;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-<div class="header">
-<h1>КЛИКЕР</h1>
-<div class="score" id="score">0</div>
-<div class="stats">
-<span>Клики: <b id="clicks">0</b></span>
-<span>|</span>
-<span>Очков/сек: <b id="perSec">0</b></span>
-<span>|</span>
-<span>Престиж: <b id="prestige">0</b></span>
-</span>
-</div>
-</div>
-<div class="clicker" id="clicker">КЛИК</div>
-<div class="upgrades" id="upgrades"></div>
-<div class="prestiges">
-<div style="font-size:1.2rem;margin-bottom:10px">Престиж доступен с 1,000,000</div>
-<div style="font-size:0.9rem;color:#888">Сброс прогресса, но +10% к доходу навсегда</div>
-<button class="prestige-btn" id="prestigeBtn" disabled>ПРЕСТИЖ</button>
-</div>
-</div>
-<script>
-let score=parseInt(localStorage.getItem('s')||'0');
-let clicks=parseInt(localStorage.getItem('c')||'0');
-let prestige=parseInt(localStorage.getItem('p')||'0');
-let upgrades=JSON.parse(localStorage.getItem('u')||'[]');
-const upgradeData=[
-{name:'Автокликер',desc:'Автоматически +1/сек',baseCost:50,baseIncome:1},
-{name:'Ферма',desc:'Пассивный доход +5/сек',baseCost:500,baseIncome:5},
-{name:'Завод',desc:'Производство +25/сек',baseCost:5000,baseIncome:25},
-{name:'Шахта',desc:'Добыча ресурсов +100/сек',baseCost:50000,baseIncome:100},
-{name:'Корпорация',desc:'Бизнес +500/сек',baseCost:500000,baseIncome:500},
-{name:'Планета',desc:'Колонизация +2500/сек',baseCost:5000000,baseIncome:2500}
-];
-if(!upgrades.length)upgrades=upgradeData.map(()=>({level:0}));
-const $=id=>document.getElementById(id);
-const fmt=n=>n>=1e6?''+( n/1e6).toFixed(1)+'M':n>=1e3?''+(n/1e3).toFixed(1)+'K':n;
-const save=()=>{localStorage.setItem('s',score);localStorage.setItem('c',clicks);localStorage.setItem('p',prestige);localStorage.setItem('u',JSON.stringify(upgrades))};
-const render=()=>{
-$('score').textContent=fmt(Math.floor(score));
-$('clicks').textContent=clicks;
-let ps=upgrades.reduce((a,u,i)=>a+u.level*upgradeData[i].baseIncome,0);
-ps=Math.floor(ps*(1+prestige*0.1));
-$('perSec').textContent=ps;
-$('prestige').textContent=prestige;
-$('prestigeBtn').disabled=score<1000000;
-};
-const renderUpgrades=()=>{
-const cont=$('upgrades');
-cont.innerHTML='';
-upgradeData.forEach((data,i)=>{
-const u=upgrades[i];
-const cost=Math.floor(data.baseCost*Math.pow(1.15,u.level));
-const locked=score<cost;
-const income=Math.floor(data.baseIncome*(1+prestige*0.1));
-const div=document.createElement('div');
-div.className='upgrade'+(locked?' locked':'');
-div.innerHTML=`
-<div class="upgrade-header">
-<span class="upgrade-name">${data.name}</span>
-<span class="upgrade-level">Ур. ${u.level}</span>
-</div>
-<div class="upgrade-desc">${data.desc}</div>
-<div class="upgrade-desc">+${income}/сек за уровень</div>
-<div class="upgrade-cost">Стоимость: ${fmt(cost)}</div>
-`;
-if(!locked)div.onclick=()=>{
-if(score>=cost){
-score-=cost;
-u.level++;
-save();
-render();
-renderUpgrades();
-}
-};
-cont.appendChild(div);
-});
-};
-$('clicker').onclick=()=>{
-let mult=1+prestige*0.1;
-score+=mult;
-clicks++;
-save();
-render();
-};
-$('prestigeBtn').onclick=()=>{
-if(score>=1000000&&confirm('Сбросить прогресс за +10% к доходу?')){
-score=0;
-clicks=0;
-prestige++;
-upgrades=upgradeData.map(()=>({level:0}));
-save();
-render();
-renderUpgrades();
-}
-};
-setInterval(()=>{
-let ps=upgrades.reduce((a,u,i)=>a+u.level*upgradeData[i].baseIncome,0);
-ps=ps*(1+prestige*0.1);
-score+=ps/10;
-save();
-render();
-},100);
-render();
-renderUpgrades();
-</script>
+  <h1>ЕБАНЫЙ КЛИКЕР</h1>
+  <div id="score">0</div>
+
+  <div id="main-click">
+    <img class="icon" src="https://images.unsplash.com/photo-1617791160505-6f00504e3519?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="autoclicker">
+  </div>
+
+  <div class="shop">
+    <div class="item" data-type="autoclicker" data-cost="15" data-income="1">
+      <img src="https://images.unsplash.com/photo-1500595046743-ee08c7147c8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="autoclicker">
+      <div class="item-name">Автокликер</div>
+      <div class="item-cost">Стоит: <span>15</span></div>
+      <div class="item-owned">Куплено: <span>0</span></div>
+    </div>
+
+    <div class="item" data-type="farm" data-cost="100" data-income="8">
+      <img src="https://images.unsplash.com/photo-1500384066616-8a8d547abfc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="farm">
+      <div class="item-name">Ферма</div>
+      <div class="item-cost">Стоит: <span>100</span></div>
+      <div class="item-owned">Куплено: <span>0</span></div>
+    </div>
+
+    <div class="item" data-type="factory" data-cost="800" data-income="60">
+      <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="factory">
+      <div class="item-name">Завод</div>
+      <div class="item-cost">Стоит: <span>800</span></div>
+      <div class="item-owned">Куплено: <span>0</span></div>
+    </div>
+
+    <div class="item" data-type="mine" data-cost="5000" data-income="400">
+      <img src="https://images.unsplash.com/photo-1617791160505-6f00504e3519?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="mine">
+      <div class="item-name">Шахта</div>
+      <div class="item-cost">Стоит: <span>5000</span></div>
+      <div class="item-owned">Куплено: <span>0</span></div>
+    </div>
+
+    <div class="item" data-type="corporation" data-cost="30000" data-income="2500">
+      <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="corporation">
+      <div class="item-name">Корпорация</div>
+      <div class="item-cost">Стоит: <span>30000</span></div>
+      <div class="item-owned">Куплено: <span>0</span></div>
+    </div>
+
+    <div class="item" data-type="planet" data-cost="200000" data-income="15000">
+      <img src="https://images.unsplash.com/photo-1614732414444-096e5f1122d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="planet">
+      <div class="item-name">Планета</div>
+      <div class="item-cost">Стоит: <span>200000</span></div>
+      <div class="item-owned">Куплено: <span>0</span></div>
+    </div>
+  </div>
+
+  <footer>© 2025 Ты уже миллиардер, пиздец как круто 😂🔥</footer>
+
+  <script>
+    let score = 0;
+    let clickPower = 1;
+    let autoIncome = 0;
+
+    const scoreEl = document.getElementById('score');
+    const mainClick = document.getElementById('main-click');
+
+    // Клик по главному шарику
+    mainClick.addEventListener('click', () => {
+      score += clickPower;
+      updateScore();
+    });
+
+    // Магазин
+    document.querySelectorAll('.item').forEach(item => {
+      item.addEventListener('click', () => {
+        const cost = parseInt(item.dataset.cost);
+        const type = item.dataset.type;
+        const income = parseInt(item.dataset.income);
+
+        if (score >= cost) {
+          score -= cost;
+          const owned = parseInt(item.querySelector('.item-owned span').textContent);
+          item.querySelector('.item-owned span').textContent = owned + 1;
+
+          // Увеличиваем доход
+          autoIncome += income;
+          updateScore();
+
+          // Дороже с каждым разом (классика кликеров)
+          const newCost = Math.round(cost * 1.15);
+          item.dataset.cost = newCost;
+          item.querySelector('.item-cost span').textContent = newCost;
+
+          // Легкий бонус к клику от автокликера
+          if (type === 'autoclicker') clickPower += 1;
+        } else {
+          item.style.borderColor = '#ff4444';
+          setTimeout(() => item.style.borderColor = '', 300);
+        }
+      });
+    });
+
+    // Автодобыча каждую секунду
+    setInterval(() => {
+      score += autoIncome;
+      updateScore();
+    }, 1000);
+
+    function updateScore() {
+      scoreEl.textContent = Math.floor(score).toLocaleString();
+    }
+
+    // Для красоты — можно добавить эффекты кликов, но это уже бонус
+  </script>
 </body>
 </html>
