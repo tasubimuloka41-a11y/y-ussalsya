@@ -1,39 +1,99 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>App</title>
+    <title>Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         height: 100vh;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
+        perspective: 1000px;
       }
       
-      #circle {
-        width: 280px;
-        height: 280px;
-        background: radial-gradient(circle, #667eea, #764ba2);
+      .kite {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        animation: fly 8s ease-in-out infinite, rotate3d 6s linear infinite;
+        transform-style: preserve-3d;
+      }
+      
+      .kite-body {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #9b59b6, #ff0080);
+        background-size: 400% 400%;
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        animation: rainbow 3s ease infinite;
+        box-shadow: 0 0 60px rgba(255,0,128,0.8), 0 0 100px rgba(64,224,208,0.6), inset 0 0 40px rgba(255,255,255,0.3);
+        transform: translateZ(50px);
+      }
+      
+      .tail {
+        position: absolute;
+        bottom: -150px;
+        left: 50%;
+        width: 3px;
+        height: 150px;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+        transform-origin: top;
+        animation: tailWave 2s ease-in-out infinite;
+      }
+      
+      .tail::before, .tail::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(45deg, #ff0080, #40e0d0);
         border-radius: 50%;
-        animation: pulse 2s infinite;
-        box-shadow: 0 0 40px rgba(102,126,234,0.6), inset 0 0 30px rgba(255,255,255,0.1);
+        box-shadow: 0 0 20px rgba(255,0,128,0.8);
       }
       
-      @keyframes pulse {
-        0% { transform: scale(0.92); box-shadow: 0 0 40px rgba(102,126,234,0.6), inset 0 0 30px rgba(255,255,255,0.1); }
-        50% { transform: scale(1); box-shadow: 0 0 60px rgba(102,126,234,0.9), inset 0 0 50px rgba(255,255,255,0.3); }
-        100% { transform: scale(0.92); box-shadow: 0 0 40px rgba(102,126,234,0.6), inset 0 0 30px rgba(255,255,255,0.1); }
+      .tail::before { top: 30%; left: -10px; animation: bow 1.5s ease-in-out infinite; }
+      .tail::after { top: 60%; left: -10px; animation: bow 1.5s ease-in-out infinite 0.3s; }
+      
+      @keyframes fly {
+        0%, 100% { transform: translate(0, 0) translateZ(0); }
+        25% { transform: translate(60px, -40px) translateZ(30px); }
+        50% { transform: translate(0, -80px) translateZ(60px); }
+        75% { transform: translate(-60px, -40px) translateZ(30px); }
+      }
+      
+      @keyframes rotate3d {
+        0% { transform: rotateY(0deg) rotateX(0deg); }
+        50% { transform: rotateY(180deg) rotateX(10deg); }
+        100% { transform: rotateY(360deg) rotateX(0deg); }
+      }
+      
+      @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      @keyframes tailWave {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(15deg); }
+      }
+      
+      @keyframes bow {
+        0%, 100% { transform: scale(1) translateX(0); }
+        50% { transform: scale(1.2) translateX(5px); }
       }
     </style>
 </head>
 <body>
-    <div id="circle"></div>
+    <div class="kite">
+        <div class="kite-body"></div>
+        <div class="tail"></div>
+    </div>
 </body>
 </html>
