@@ -6,7 +6,7 @@
 <title>🎮 BUBBLE SHOOTER PREMIUM</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:100vw;height:100vh;overflow:hidden;font-family:Arial,sans-serif;background:linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab);background-size:400% 400%;animation:gradient 15s ease infinite;position:relative}
+body{width:100vw;height:100vh;overflow:hidden;font-family:Arial,sans-serif;background:linear-gradient(-45deg,#FF1744,#FF6F00,#00E676,#00B0FF,#D500F9);background-size:400% 400%;animation:gradient 15s ease infinite;position:relative}
 @keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 #stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
 .star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
@@ -14,10 +14,10 @@ body{width:100vw;height:100vh;overflow:hidden;font-family:Arial,sans-serif;backg
 #menu,#game,#leaderboard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;text-align:center;color:#fff;display:none}
 #menu.active,#game.active,#leaderboard.active{display:block}
 h1{font-size:48px;font-weight:bold;margin-bottom:40px;text-shadow:3px 3px 6px rgba(0,0,0,0.3)}
-button{font-family:Arial,sans-serif;font-size:20px;font-weight:bold;padding:18px 45px;margin:15px;background:linear-gradient(135deg,#ff6b9d 0%,#c06c84 100%);color:#fff;border:none;border-radius:50px;cursor:pointer;text-shadow:1px 1px 2px rgba(0,0,0,0.3);box-shadow:0 8px 15px rgba(0,0,0,0.3);transition:all 0.3s;text-transform:uppercase;letter-spacing:1px}
+button{font-family:Arial,sans-serif;font-size:20px;font-weight:bold;padding:18px 45px;margin:15px;background:linear-gradient(135deg,#FF1744 0%,#F50057 100%);color:#fff;border:none;border-radius:50px;cursor:pointer;text-shadow:1px 1px 2px rgba(0,0,0,0.3);box-shadow:0 8px 15px rgba(0,0,0,0.3);transition:all 0.3s;text-transform:uppercase;letter-spacing:1px}
 button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 20px rgba(0,0,0,0.4)}
 button:active{transform:translateY(-1px);box-shadow:0 5px 10px rgba(0,0,0,0.2)}
-#gameCanvas{border-radius:15px;box-shadow:0 0 30px rgba(0,0,0,0.3);background:#fff}
+#gameCanvas{border:none;background:transparent}
 #score,#highScore{font-size:24px;font-weight:bold;margin:15px;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
 #leaderboard table{margin:20px auto;border-collapse:collapse;background:rgba(255,255,255,0.1);border-radius:15px;overflow:hidden}
 #leaderboard td{padding:12px 25px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:18px}
@@ -47,7 +47,7 @@ button:active{transform:translateY(-1px);box-shadow:0 5px 10px rgba(0,0,0,0.2)}
 const canvas=document.getElementById('gameCanvas');
 const ctx=canvas.getContext('2d');
 const EMOJIS=['😀','😂','😍','😎','🥳','😘','😋','🤩'];
-const COLORS=['#FF6B9D','#4ECDC4','#FFC75F','#845EC2','#FF9671','#00C9A7','#C34A36','#F9F871'];
+const COLORS=['#FF1744','#FF6F00','#00E676','#00B0FF','#D500F9','#FFEA00','#00E5FF','#FF4081'];
 const ROWS=10;
 const COLS=10;
 const SIZE=60;
@@ -55,7 +55,6 @@ let grid=[];
 let score=0;
 let highScore=localStorage.getItem('highScore')||0;
 let currentBall={x:300,y:550,color:null,emoji:null};
-let nextColor=Math.floor(Math.random()*COLORS.length);
 
 function initGrid(){
 for(let r=0;r<5;r++){
