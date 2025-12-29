@@ -4,24 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>🎮 BUBBLE SHOOTER PREMIUM</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:100vw;height:100vh;overflow:hidden;font-family:'Press Start 2P',cursive;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);position:relative}
+body{width:100vw;height:100vh;overflow:hidden;font-family:Arial,sans-serif;background:linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab);background-size:400% 400%;animation:gradient 15s ease infinite;position:relative}
+@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 #stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
 .star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
 @keyframes twinkle{0%,100%{opacity:0.3}50%{opacity:1}}
 #menu,#game,#leaderboard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;text-align:center;color:#fff;display:none}
 #menu.active,#game.active,#leaderboard.active{display:block}
-h1{font-size:32px;margin-bottom:30px;text-shadow:4px 4px 0 #000}
-button{font-family:'Press Start 2P',cursive;font-size:16px;padding:15px 30px;margin:10px;background:#ff6b6b;color:#fff;border:4px solid #000;cursor:pointer;text-shadow:2px 2px 0 #000;box-shadow:4px 4px 0 #000;transition:all 0.1s}
-button:hover{background:#ff5252;transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
-button:active{transform:translate(4px,4px);box-shadow:0 0 0 #000}
-#gameCanvas{border:5px solid #000;box-shadow:0 0 20px rgba(0,0,0,0.5);background:#fff}
-#score,#highScore{font-size:20px;margin:10px;text-shadow:2px 2px 0 #000}
-#leaderboard table{margin:20px auto;border-collapse:collapse}
-#leaderboard td{padding:10px 20px;border:2px solid #fff;font-size:14px}
-.player-input{font-family:'Press Start 2P',cursive;font-size:16px;padding:10px;margin:10px;border:4px solid #000;text-align:center}
+h1{font-size:48px;font-weight:bold;margin-bottom:40px;text-shadow:3px 3px 6px rgba(0,0,0,0.3)}
+button{font-family:Arial,sans-serif;font-size:20px;font-weight:bold;padding:18px 45px;margin:15px;background:linear-gradient(135deg,#ff6b9d 0%,#c06c84 100%);color:#fff;border:none;border-radius:50px;cursor:pointer;text-shadow:1px 1px 2px rgba(0,0,0,0.3);box-shadow:0 8px 15px rgba(0,0,0,0.3);transition:all 0.3s;text-transform:uppercase;letter-spacing:1px}
+button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 20px rgba(0,0,0,0.4)}
+button:active{transform:translateY(-1px);box-shadow:0 5px 10px rgba(0,0,0,0.2)}
+#gameCanvas{border-radius:15px;box-shadow:0 0 30px rgba(0,0,0,0.3);background:#fff}
+#score,#highScore{font-size:24px;font-weight:bold;margin:15px;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
+#leaderboard table{margin:20px auto;border-collapse:collapse;background:rgba(255,255,255,0.1);border-radius:15px;overflow:hidden}
+#leaderboard td{padding:12px 25px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:18px}
+#leaderboard tr:first-child td{background:rgba(255,255,255,0.2);font-weight:bold}
+.player-input{font-family:Arial,sans-serif;font-size:18px;padding:12px;margin:10px;border:2px solid rgba(255,255,255,0.5);border-radius:25px;text-align:center;background:rgba(255,255,255,0.9)}
 </style>
 </head>
 <body>
@@ -45,58 +46,72 @@ button:active{transform:translate(4px,4px);box-shadow:0 0 0 #000}
 <script>
 const canvas=document.getElementById('gameCanvas');
 const ctx=canvas.getContext('2d');
-const COLORS=['#ff6b6b','#4ecdc4','#45b7d1','#f7d6cf','#b8bfce'];
+const EMOJIS=['😀','😂','😍','😎','🥳','😘','😋','🤩'];
+const COLORS=['#FF6B9D','#4ECDC4','#FFC75F','#845EC2','#FF9671','#00C9A7','#C34A36','#F9F871'];
 const ROWS=10;
 const COLS=10;
 const SIZE=60;
 let grid=[];
 let score=0;
 let highScore=localStorage.getItem('highScore')||0;
-let currentBall={x:300,y:550,color:null};
-let nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+let currentBall={x:300,y:550,color:null,emoji:null};
+let nextColor=Math.floor(Math.random()*COLORS.length);
 
 function initGrid(){
 for(let r=0;r<5;r++){
 grid[r]=[];
 for(let c=0;c<COLS;c++){
-if(r<5){grid[r][c]=COLORS[Math.floor(Math.random()*COLORS.length)]}else{grid[r][c]=null}
+let idx=Math.floor(Math.random()*COLORS.length);
+grid[r][c]={color:COLORS[idx],emoji:EMOJIS[idx]};
 }
 }
+for(let r=5;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++){grid[r][c]=null}}
 }
 
-function drawBall(x,y,color){
+function drawBall(x,y,color,emoji){
 if(!color)return;
 ctx.beginPath();
 ctx.arc(x,y,SIZE/2-5,0,Math.PI*2);
 ctx.fillStyle=color;
 ctx.fill();
-ctx.strokeStyle='#000';
-ctx.lineWidth=3;
-ctx.stroke();
+ctx.shadowColor='rgba(0,0,0,0.3)';
+ctx.shadowBlur=10;
+ctx.shadowOffsetX=3;
+ctx.shadowOffsetY=3;
+if(emoji){
+ctx.shadowBlur=0;
+ctx.shadowOffsetX=0;
+ctx.shadowOffsetY=0;
+ctx.font='30px Arial';
+ctx.textAlign='center';
+ctx.textBaseline='middle';
+ctx.fillText(emoji,x,y);
+}
 }
 
 function draw(){
 ctx.clearRect(0,0,600,600);
 for(let r=0;r<ROWS;r++){
 for(let c=0;c<COLS;c++){
-if(grid[r] && grid[r][c]){
-drawBall(c*SIZE+SIZE/2,r*SIZE+SIZE/2,grid[r][c]);
+if(grid[r]&&grid[r][c]){
+drawBall(c*SIZE+SIZE/2,r*SIZE+SIZE/2,grid[r][c].color,grid[r][c].emoji);
 }
 }
 }
 if(currentBall.color){
-drawBall(currentBall.x,currentBall.y,currentBall.color);
+drawBall(currentBall.x,currentBall.y,currentBall.color,currentBall.emoji);
 }
 }
 
 function findMatches(row,col){
-const color=grid[row][col];
+if(!grid[row]||!grid[row][col])return[];
+const color=grid[row][col].color;
 const visited=[];
 const matches=[];
 
 function dfs(r,c){
 if(r<0||r>=ROWS||c<0||c>=COLS)return;
-if(!grid[r]||grid[r][c]!==color)return;
+if(!grid[r]||!grid[r][c]||grid[r][c].color!==color)return;
 const key=r+','+c;
 if(visited[key])return;
 visited[key]=true;
@@ -117,7 +132,7 @@ return matches.length;
 
 function checkGameOver(){
 for(let c=0;c<COLS;c++){
-if(grid[ROWS-1] && grid[ROWS-1][c]){
+if(grid[ROWS-1]&&grid[ROWS-1][c]){
 return true;
 }
 }
@@ -141,16 +156,16 @@ if(c<0)c=0;
 if(c>=COLS)c=COLS-1;
 if(!grid[r])grid[r]=[];
 let placed=false;
-while(r<ROWS && !placed){
+while(r<ROWS&&!placed){
 if(r==0||c<0||c>=COLS||!grid[r]){
 if(!grid[r])grid[r]=[];
-grid[r][c]=currentBall.color;
+grid[r][c]={color:currentBall.color,emoji:currentBall.emoji};
 placed=true;
 break;
 }
-if(r>=1 && grid[r-1] && grid[r-1][c]){
+if(r>=1&&grid[r-1]&&grid[r-1][c]){
 if(!grid[r])grid[r]=[];
-grid[r][c]=currentBall.color;
+grid[r][c]={color:currentBall.color,emoji:currentBall.emoji};
 placed=true;
 break;
 }
@@ -167,8 +182,9 @@ if(checkGameOver()){
 endGame();
 return;
 }
-currentBall.color=nextColor;
-nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+let idx=Math.floor(Math.random()*COLORS.length);
+currentBall.color=COLORS[idx];
+currentBall.emoji=EMOJIS[idx];
 draw();
 }
 };
@@ -180,8 +196,9 @@ initGrid();
 score=0;
 document.getElementById('score').textContent='Очки: 0';
 document.getElementById('highScore').textContent='Рекорд: '+highScore;
-currentBall.color=COLORS[Math.floor(Math.random()*COLORS.length)];
-nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+let idx=Math.floor(Math.random()*COLORS.length);
+currentBall.color=COLORS[idx];
+currentBall.emoji=EMOJIS[idx];
 draw();
 }
 
