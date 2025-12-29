@@ -58,7 +58,8 @@
     
   </script>
     
-    function findFloatingClusters(){let connected=new Set();function dfs(r,c){let key=r+','+c;if(connected.has(key)||!grid[r]||!grid[r][c]||grid[r][c].alpha<=0)return;connected.add(key);getNeighbors(r,c).forEach(({r:nr,c:nc})=>dfs(nr,nc));}for(let c=0;c<grid[0].length;c++){if(grid[0][c]&&grid[0][c].alpha>0)dfs(0,c);}let floating=[];grid.forEach((row,r)=>row.forEach((b,c)=>{if(b&&b.alpha>0&&!connected.has(r+','+c)){b.falling=true;b.vy=0;floating.push(b);}}));return floating.length>0;}
+    <script>
+function findFloatingClusters(){let connected=new Set();function dfs(r,c){let key=r+','+c;if(connected.has(key)||!grid[r]||!grid[r][c]||grid[r][c].alpha<=0)return;connected.add(key);getNeighbors(r,c).forEach(({r:nr,c:nc})=>dfs(nr,nc));}for(let c=0;c<grid[0].length;c++){if(grid[0][c]&&grid[0][c].alpha>0)dfs(0,c);}let floating=[];grid.forEach((row,r)=>row.forEach((b,c)=>{if(b&&b.alpha>0&&!connected.has(r+','+c)){b.falling=true;b.vy=0;floating.push(b);}}));return floating.length>0;}
     
     function applyGravity(){let moved=false;grid.forEach(row=>row.forEach(b=>{if(b&&b.falling){b.vy+=0.5;b.y+=b.vy;if(b.y>H){b.alpha=0;}moved=true;}}));return moved;}
     
