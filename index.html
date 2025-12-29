@@ -1,1 +1,236 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🎮 BUBBLE SHOOTER PREMIUM</title><link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{width:100vw;height:100vh;overflow:hidden;font-family:'Press Start 2P',cursive;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);position:relative}#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite}@keyframes twinkle{0%,100%{opacity:0.3}50%{opacity:1}}#menu,#game,#leaderboard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;text-align:center;color:#fff;display:none}#menu.active,#game.active,#leaderboard.active{display:block}h1{font-size:32px;margin-bottom:30px;text-shadow:4px 4px 0 #000}button{font-family:'Press Start 2P',cursive;font-size:16px;padding:15px 30px;margin:10px;background:#ff6b6b;color:#fff;border:4px solid #000;cursor:pointer;text-shadow:2px 2px 0 #000;box-shadow:4px 4px 0 #000;transition:all 0.1s}button:hover{background:#ff5252;transform:translate(2px,2px);box-shadow:2px 2px 0 #000}button:active{transform:translate(4px,4px);box-shadow:0 0 0 #000}#gameCanvas{border:5px solid #000;box-shadow:0 0 20px rgba(0,0,0,0.5);background:#fff}#score,#highScore{font-size:20px;margin:10px;text-shadow:2px 2px 0 #000}#leaderboard table{margin:20px auto;border-collapse:collapse}#leaderboard td{padding:10px 20px;border:2px solid #fff;font-size:14px}.player-input{font-family:'Press Start 2P',cursive;font-size:16px;padding:10px;margin:10px;border:4px solid #000;text-align:center}</style></head><body><div id="stars"></div><div id="menu" class="active"><h1>🎮 BUBBLE SHOOTER</h1><button onclick="startGame()">ИГРАТЬ</button><button onclick="showLeaderboard()">РЕКОРДЫ</button></div><div id="game"><div id="score">Очки: 0</div><div id="highScore">Рекорд: 0</div><canvas id="gameCanvas" width="600" height="600"></canvas><br><button onclick="backToMenu()">МЕНЮ</button></div><div id="leaderboard"><h1>🏆 РЕКОРДЫ</h1><table id="leaderboardTable"></table><br><button onclick="backToMenu()">НАЗАД</button></div><script>for(let i=0;i<50;i++){let star=document.createElement('div');star.className='star';star.style.width=star.style.height=Math.random()*3+'px';star.style.left=Math.random()*100+'%';star.style.top=Math.random()*100+'%';star.style.animationDelay=Math.random()*3+'s';document.getElementById('stars').appendChild(star)}const canvas=document.getElementById('gameCanvas');const ctx=canvas.getContext('2d');const COLORS=['#ff6b6b','#4ecdc4','#45b7d1','#f7dc6f','#bb8fce'];const ROWS=10;const COLS=10;const SIZE=60;let grid=[];let score=0;let highScore=parseInt(localStorage.getItem('highScore'))||0;let currentBall={x:300,y:550,color:''};let nextColor='';function initGrid(){grid=[];for(let r=0;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++){if(r<5)grid[r][c]=COLORS[Math.floor(Math.random()*COLORS.length)];else grid[r][c]=null}}}function drawBall(x,y,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,25,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='rgba(255,255,255,0.3)';ctx.beginPath();ctx.arc(x-8,y-8,10,0,Math.PI*2);ctx.fill()}function draw(){ctx.clearRect(0,0,600,600);for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(grid[r][c])drawBall(c*SIZE+30,r*SIZE+30,grid[r][c]);if(currentBall.color)drawBall(currentBall.x,currentBall.y,currentBall.color)}function findMatches(row,col){let color=grid[row][col];if(!color)return[];let visited=new Set();let matches=[];function dfs(r,c){let key=r+','+c;if(visited.has(key)||r<0||r>=ROWS||c<0||c>=COLS||!grid[r]||grid[r][c]!==color)return;visited.add(key);matches.push([r,c]);dfs(r-1,c);dfs(r+1,c);dfs(r,c-1);dfs(r,c+1)}dfs(row,col);return matches}function removeBubbles(matches){if(matches.length>=3){matches.forEach(([r,c])=>grid[r][c]=null);score+=matches.length*10;document.getElementById('score').textContent='Очки: '+score;return true}return false}canvas.onclick=e=>{if(!currentBall.color)return;let rect=canvas.getBoundingClientRect();let clickX=e.clientX-rect.left;let clickY=e.clientY-rect.top;let angle=Math.atan2(clickY-currentBall.y,clickX-currentBall.x);let steps=0;let ballX=currentBall.x,ballY=currentBall.y;let vx=Math.cos(angle)*10,vy=Math.sin(angle)*10;let placed=false;while(!placed&&steps<100){ballX+=vx;ballY+=vy;if(ballX<30||ballX>570)vx*=-1;if(ballY<30){let c=Math.round((ballX-30)/SIZE);let r=0;if(c>=0&&c<COLS&&!grid[r][c]){grid[r][c]=currentBall.color;let matches=findMatches(r,c);removeBubbles(matches);placed=true}}else{for(let r=0;r<ROWS;r++){for(let c=0;c<COLS;c++){if(grid[r][c]){let cellX=c*SIZE+30,cellY=r*SIZE+30;let dist=Math.sqrt((ballX-cellX)**2+(ballY-cellY)**2);if(dist<50){for(let dr=-1;dr<=1;dr++){for(let dc=-1;dc<=1;dc++){let nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!grid[nr][nc]){grid[nr][nc]=currentBall.color;let matches=findMatches(nr,nc);removeBubbles(matches);placed=true;break}}}break}}if(placed)break}}if(placed)break}}steps++}currentBall.color=nextColor||COLORS[Math.floor(Math.random()*COLORS.length)];nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];draw()};function startGame(){document.getElementById('menu').classList.remove('active');document.getElementById('game').classList.add('active');document.getElementById('highScore').textContent='Рекорд: '+highScore;score=0;document.getElementById('score').textContent='Очки: 0';initGrid();currentBall.color=COLORS[Math.floor(Math.random()*COLORS.length)];nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];draw()}function backToMenu(){let name=prompt('Введите ваше имя:','Player');if(name&&score>0){let records=JSON.parse(localStorage.getItem('records')||'[]');records.push({name,score,date:new Date().toLocaleDateString()});records.sort((a,b)=>b.score-a.score);records=records.slice(0,10);localStorage.setItem('records',JSON.stringify(records));if(score>highScore){highScore=score;localStorage.setItem('highScore',highScore)}}document.getElementById('game').classList.remove('active');document.getElementById('leaderboard').classList.remove('active');document.getElementById('menu').classList.add('active')}function showLeaderboard(){let records=JSON.parse(localStorage.getItem('records')||'[]');let table=document.getElementById('leaderboardTable');table.innerHTML='<tr><td>Место</td><td>Имя</td><td>Очки</td><td>Дата</td></tr>';records.slice(0,10).forEach((r,i)=>{table.innerHTML+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.score}</td><td>${r.date}</td></tr>`});document.getElementById('menu').classList.remove('active');document.getElementById('leaderboard').classList.add('active')}</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🎮 BUBBLE SHOOTER PREMIUM</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:100vw;height:100vh;overflow:hidden;font-family:'Press Start 2P',cursive;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);position:relative}
+#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:0.3}50%{opacity:1}}
+#menu,#game,#leaderboard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;text-align:center;color:#fff;display:none}
+#menu.active,#game.active,#leaderboard.active{display:block}
+h1{font-size:32px;margin-bottom:30px;text-shadow:4px 4px 0 #000}
+button{font-family:'Press Start 2P',cursive;font-size:16px;padding:15px 30px;margin:10px;background:#ff6b6b;color:#fff;border:4px solid #000;cursor:pointer;text-shadow:2px 2px 0 #000;box-shadow:4px 4px 0 #000;transition:all 0.1s}
+button:hover{background:#ff5252;transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
+button:active{transform:translate(4px,4px);box-shadow:0 0 0 #000}
+#gameCanvas{border:5px solid #000;box-shadow:0 0 20px rgba(0,0,0,0.5);background:#fff}
+#score,#highScore{font-size:20px;margin:10px;text-shadow:2px 2px 0 #000}
+#leaderboard table{margin:20px auto;border-collapse:collapse}
+#leaderboard td{padding:10px 20px;border:2px solid #fff;font-size:14px}
+.player-input{font-family:'Press Start 2P',cursive;font-size:16px;padding:10px;margin:10px;border:4px solid #000;text-align:center}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div id="menu" class="active">
+<h1>🎮 BUBBLE SHOOTER</h1>
+<button id="playBtn">ИГРАТЬ</button>
+<button id="recordsBtn">РЕКОРДЫ</button>
+</div>
+<div id="game">
+<div id="score">Очки: 0</div>
+<div id="highScore">Рекорд: 0</div>
+<canvas id="gameCanvas" width="600" height="600"></canvas><br>
+<button id="menuBtn">МЕНЮ</button>
+</div>
+<div id="leaderboard">
+<h1>🏆 РЕКОРДЫ</h1>
+<table id="leaderboardTable"></table><br>
+<button id="backBtn">НАЗАД</button>
+</div>
+<script>
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+const COLORS=['#ff6b6b','#4ecdc4','#45b7d1','#f7d6cf','#b8bfce'];
+const ROWS=10;
+const COLS=10;
+const SIZE=60;
+let grid=[];
+let score=0;
+let highScore=localStorage.getItem('highScore')||0;
+let currentBall={x:300,y:550,color:null};
+let nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+
+function initGrid(){
+for(let r=0;r<5;r++){
+grid[r]=[];
+for(let c=0;c<COLS;c++){
+if(r<5){grid[r][c]=COLORS[Math.floor(Math.random()*COLORS.length)]}else{grid[r][c]=null}
+}
+}
+}
+
+function drawBall(x,y,color){
+if(!color)return;
+ctx.beginPath();
+ctx.arc(x,y,SIZE/2-5,0,Math.PI*2);
+ctx.fillStyle=color;
+ctx.fill();
+ctx.strokeStyle='#000';
+ctx.lineWidth=3;
+ctx.stroke();
+}
+
+function draw(){
+ctx.clearRect(0,0,600,600);
+for(let r=0;r<ROWS;r++){
+for(let c=0;c<COLS;c++){
+if(grid[r] && grid[r][c]){
+drawBall(c*SIZE+SIZE/2,r*SIZE+SIZE/2,grid[r][c]);
+}
+}
+}
+if(currentBall.color){
+drawBall(currentBall.x,currentBall.y,currentBall.color);
+}
+}
+
+function findMatches(row,col){
+const color=grid[row][col];
+const visited=[];
+const matches=[];
+
+function dfs(r,c){
+if(r<0||r>=ROWS||c<0||c>=COLS)return;
+if(!grid[r]||grid[r][c]!==color)return;
+const key=r+','+c;
+if(visited[key])return;
+visited[key]=true;
+matches.push({r,c});
+dfs(r-1,c);dfs(r+1,c);dfs(r,c-1);dfs(r,c+1);
+}
+
+dfs(row,col);
+return matches;
+}
+
+function removeBubbles(matches){
+matches.forEach(({r,c})=>{
+if(grid[r])grid[r][c]=null;
+});
+return matches.length;
+}
+
+function checkGameOver(){
+for(let c=0;c<COLS;c++){
+if(grid[ROWS-1] && grid[ROWS-1][c]){
+return true;
+}
+}
+return false;
+}
+
+canvas.onclick=(e)=>{
+if(!currentBall.color)return;
+let rect=canvas.getBoundingClientRect();
+let clickX=e.clientX-rect.left;
+let clickY=e.clientY-rect.top;
+let ballX=currentBall.x;
+let ballY=currentBall.y;
+if(ballX<30){ballX=30}
+if(ballX>570){ballX=570}
+let c=Math.floor((ballX-0.3)/SIZE);
+let r=Math.floor((ballY+25)/SIZE);
+if(r<0)r=0;
+if(r>=ROWS)r=ROWS-1;
+if(c<0)c=0;
+if(c>=COLS)c=COLS-1;
+if(!grid[r])grid[r]=[];
+let placed=false;
+while(r<ROWS && !placed){
+if(r==0||c<0||c>=COLS||!grid[r]){
+if(!grid[r])grid[r]=[];
+grid[r][c]=currentBall.color;
+placed=true;
+break;
+}
+if(r>=1 && grid[r-1] && grid[r-1][c]){
+if(!grid[r])grid[r]=[];
+grid[r][c]=currentBall.color;
+placed=true;
+break;
+}
+r++;
+}
+if(placed){
+let matches=findMatches(r,c);
+if(matches.length>=3){
+let removed=removeBubbles(matches);
+score+=removed*10;
+document.getElementById('score').textContent='Очки: '+score;
+}
+if(checkGameOver()){
+endGame();
+return;
+}
+currentBall.color=nextColor;
+nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+draw();
+}
+};
+
+function startGame(){
+document.getElementById('menu').classList.remove('active');
+document.getElementById('game').classList.add('active');
+initGrid();
+score=0;
+document.getElementById('score').textContent='Очки: 0';
+document.getElementById('highScore').textContent='Рекорд: '+highScore;
+currentBall.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+draw();
+}
+
+function backToMenu(){
+document.getElementById('game').classList.remove('active');
+document.getElementById('leaderboard').classList.remove('active');
+document.getElementById('menu').classList.add('active');
+}
+
+function endGame(){
+if(score>highScore){
+highScore=score;
+localStorage.setItem('highScore',highScore);
+}
+let name=prompt('Введите ваше имя:','Player');
+if(name&&score>0){
+let records=JSON.parse(localStorage.getItem('records'))||[];
+records.push({name,score,date:new Date().toLocaleDateString()});
+records.sort((a,b)=>b.score-a.score).slice(0,10);
+localStorage.setItem('records',JSON.stringify(records));
+}
+showLeaderboard();
+}
+
+function showLeaderboard(){
+let records=JSON.parse(localStorage.getItem('records'))||[];
+let table=document.getElementById('leaderboardTable');
+table.innerHTML='<tr><td>#{}</td><td>Имя</td><td>Очки</td><td>Дата</td></tr>';
+records.slice(0,10).forEach((r,i)=>{
+table.innerHTML+='<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.score+'</td><td>'+r.date+'</td></tr>';
+});
+document.getElementById('game').classList.remove('active');
+document.getElementById('menu').classList.remove('active');
+document.getElementById('leaderboard').classList.add('active');
+}
+
+for(let i=0;i<100;i++){
+const star=document.createElement('div');
+star.className='star';
+star.style.width=star.style.height=Math.random()*3+'px';
+star.style.left=Math.random()*100+'%';
+star.style.top=Math.random()*100+'%';
+document.getElementById('stars').appendChild(star);
+}
+
+document.getElementById('playBtn').addEventListener('click',startGame);
+document.getElementById('recordsBtn').addEventListener('click',showLeaderboard);
+document.getElementById('menuBtn').addEventListener('click',backToMenu);
+document.getElementById('backBtn').addEventListener('click',backToMenu);
+</script>
+</body>
+</html>
