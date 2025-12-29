@@ -6,118 +6,107 @@
 <title>🎮 BUBBLE SHOOTER PREMIUM</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:100vw;height:100vh;overflow:hidden;font-family:Arial,sans-serif;background:linear-gradient(-45deg,#FF1744,#FF6F00,#00E676,#00B0FF,#D500F9);background-size:400% 400%;animation:gradient 15s ease infinite;position:relative}
+body{font-family:Arial,sans-serif;background:linear-gradient(-45deg,#FF1744,#FF6F00,#00E676,#00B0FF,#D500F9);background-size:400% 400%;animation:gradient 15s ease infinite;display:flex;justify-content:center;align-items:center;min-height:100vh}
 @keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
-.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
-@keyframes twinkle{0%,100%{opacity:0.3}50%{opacity:1}}
-#menu,#game,#leaderboard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;text-align:center;color:#fff;display:none}
-#menu.active,#game.active,#leaderboard.active{display:block}
-h1{font-size:48px;font-weight:bold;margin-bottom:40px;text-shadow:3px 3px 6px rgba(0,0,0,0.3)}
-button{font-family:Arial,sans-serif;font-size:20px;font-weight:bold;padding:18px 45px;margin:15px;background:linear-gradient(135deg,#FF1744 0%,#F50057 100%);color:#fff;border:none;border-radius:50px;cursor:pointer;text-shadow:1px 1px 2px rgba(0,0,0,0.3);box-shadow:0 8px 15px rgba(0,0,0,0.3);transition:all 0.3s;text-transform:uppercase;letter-spacing:1px}
-button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 20px rgba(0,0,0,0.4)}
-button:active{transform:translateY(-1px);box-shadow:0 5px 10px rgba(0,0,0,0.2)}
-#gameCanvas{border:none;background:transparent}
-#score,#highScore{font-size:24px;font-weight:bold;margin:15px;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
-#leaderboard table{margin:20px auto;border-collapse:collapse;background:rgba(255,255,255,0.1);border-radius:15px;overflow:hidden}
-#leaderboard td{padding:12px 25px;border-bottom:1px solid rgba(255,255,255,0.1);font-size:18px}
-#leaderboard tr:first-child td{background:rgba(255,255,255,0.2);font-weight:bold}
-.player-input{font-family:Arial,sans-serif;font-size:18px;padding:12px;margin:10px;border:2px solid rgba(255,255,255,0.5);border-radius:25px;text-align:center;background:rgba(255,255,255,0.9)}
+#gameContainer{position:relative;text-align:center}
+#score,#moves{color:#fff;font-size:24px;font-weight:bold;margin:10px;text-shadow:2px 2px 4px rgba(0,0,0,0.5)}
+canvas{display:block;margin:20px auto;cursor:crosshair}
+button{font-size:18px;font-weight:bold;padding:12px 30px;margin:10px;background:linear-gradient(135deg,#FF1744,#F50057);color:#fff;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);transition:all 0.3s}
+button:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 15px rgba(0,0,0,0.4)}
 </style>
 </head>
 <body>
-<div id="stars"></div>
-<div id="menu" class="active">
-<h1>🎮 BUBBLE SHOOTER</h1>
-<button id="playBtn">ИГРАТЬ</button>
-<button id="recordsBtn">РЕКОРДЫ</button>
-</div>
-<div id="game">
+<div id="gameContainer">
+<h1 style="color:#fff;font-size:36px;text-shadow:3px 3px 6px rgba(0,0,0,0.5);margin-bottom:20px">🎮 BUBBLE SHOOTER</h1>
 <div id="score">Очки: 0</div>
-<div id="highScore">Рекорд: 0</div>
-<canvas id="gameCanvas" width="600" height="600"></canvas><br>
-<button id="menuBtn">МЕНЮ</button>
-</div>
-<div id="leaderboard">
-<h1>🏆 РЕКОРДЫ</h1>
-<table id="leaderboardTable"></table><br>
-<button id="backBtn">НАЗАД</button>
+<div id="moves">Ходы: 30</div>
+<canvas id="gameCanvas" width="600" height="700"></canvas>
+<button id="restart">Новая игра</button>
 </div>
 <script>
 const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-const EMOJIS=['😀','😂','😍','😎','🥳','😘','😋','🤩'];
-const COLORS=['#FF1744','#FF6F00','#00E676','#00B0FF','#D500F9','#FFEA00','#00E5FF','#FF4081'];
-const ROWS=10;
+const ctx=canvas.getContext('2d',{alpha:true});
+const COLORS=['#FF1744','#00E676','#00B0FF','#FFEA00'];
+const ROWS=12;
 const COLS=10;
 const SIZE=60;
 let grid=[];
 let score=0;
-let highScore=localStorage.getItem('highScore')||0;
-let currentBall={x:300,y:550,color:null,emoji:null};
+let movesLeft=30;
+let currentBall={x:300,y:650,color:null,angle:0};
+let nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+let mouseX=300;
+let mouseY=0;
 
 function initGrid(){
-for(let r=0;r<5;r++){
+for(let r=0;r<ROWS;r++){
 grid[r]=[];
 for(let c=0;c<COLS;c++){
-let idx=Math.floor(Math.random()*COLORS.length);
-grid[r][c]={color:COLORS[idx],emoji:EMOJIS[idx]};
+if(r<5){
+grid[r][c]=COLORS[Math.floor(Math.random()*COLORS.length)];
+}else{
+grid[r][c]=null;
 }
 }
-for(let r=5;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++){grid[r][c]=null}}
+}
 }
 
-function drawBall(x,y,color,emoji){
+function drawBall(x,y,color){
 if(!color)return;
+ctx.save();
+ctx.shadowColor='rgba(0,0,0,0.3)';
+ctx.shadowBlur=8;
+ctx.shadowOffsetX=3;
+ctx.shadowOffsetY=3;
 ctx.beginPath();
 ctx.arc(x,y,SIZE/2-5,0,Math.PI*2);
 ctx.fillStyle=color;
 ctx.fill();
-ctx.shadowColor='rgba(0,0,0,0.3)';
-ctx.shadowBlur=10;
-ctx.shadowOffsetX=3;
-ctx.shadowOffsetY=3;
-if(emoji){
-ctx.shadowBlur=0;
-ctx.shadowOffsetX=0;
-ctx.shadowOffsetY=0;
-ctx.font='30px Arial';
-ctx.textAlign='center';
-ctx.textBaseline='middle';
-ctx.fillText(emoji,x,y);
-}
+ctx.strokeStyle='rgba(255,255,255,0.3)';
+ctx.lineWidth=2;
+ctx.stroke();
+ctx.restore();
 }
 
 function draw(){
-ctx.clearRect(0,0,600,600);
+ctx.clearRect(0,0,canvas.width,canvas.height);
 for(let r=0;r<ROWS;r++){
 for(let c=0;c<COLS;c++){
-if(grid[r]&&grid[r][c]){
-drawBall(c*SIZE+SIZE/2,r*SIZE+SIZE/2,grid[r][c].color,grid[r][c].emoji);
+if(grid[r][c]){
+drawBall(c*SIZE+SIZE/2,r*SIZE+SIZE/2,grid[r][c]);
 }
 }
 }
 if(currentBall.color){
-drawBall(currentBall.x,currentBall.y,currentBall.color,currentBall.emoji);
+drawBall(currentBall.x,currentBall.y,currentBall.color);
+ctx.save();
+ctx.strokeStyle='rgba(255,255,255,0.5)';
+ctx.lineWidth=2;
+ctx.setLineDash([5,5]);
+ctx.beginPath();
+ctx.moveTo(currentBall.x,currentBall.y);
+let angle=Math.atan2(mouseY-currentBall.y,mouseX-currentBall.x);
+ctx.lineTo(currentBall.x+Math.cos(angle)*200,currentBall.y+Math.sin(angle)*200);
+ctx.stroke();
+ctx.restore();
 }
+drawBall(300,680,nextColor);
 }
 
 function findMatches(row,col){
 if(!grid[row]||!grid[row][col])return[];
-const color=grid[row][col].color;
-const visited=[];
+const color=grid[row][col];
+const visited={};
 const matches=[];
-
 function dfs(r,c){
 if(r<0||r>=ROWS||c<0||c>=COLS)return;
-if(!grid[r]||!grid[r][c]||grid[r][c].color!==color)return;
+if(!grid[r]||!grid[r][c]||grid[r][c]!==color)return;
 const key=r+','+c;
 if(visited[key])return;
 visited[key]=true;
 matches.push({r,c});
 dfs(r-1,c);dfs(r+1,c);dfs(r,c-1);dfs(r,c+1);
 }
-
 dfs(row,col);
 return matches;
 }
@@ -131,24 +120,18 @@ return matches.length;
 
 function checkGameOver(){
 for(let c=0;c<COLS;c++){
-if(grid[ROWS-1]&&grid[ROWS-1][c]){
-return true;
+if(grid[ROWS-1]&&grid[ROWS-1][c])return true;
 }
-}
-return false;
+return movesLeft<=0;
 }
 
 canvas.onclick=(e)=>{
-if(!currentBall.color)return;
+if(!currentBall.color||movesLeft<=0)return;
 let rect=canvas.getBoundingClientRect();
 let clickX=e.clientX-rect.left;
 let clickY=e.clientY-rect.top;
-let ballX=currentBall.x;
-let ballY=currentBall.y;
-if(ballX<30){ballX=30}
-if(ballX>570){ballX=570}
-let c=Math.floor((ballX-0.3)/SIZE);
-let r=Math.floor((ballY+25)/SIZE);
+let c=Math.floor(clickX/SIZE);
+let r=Math.floor((clickY-50)/SIZE);
 if(r<0)r=0;
 if(r>=ROWS)r=ROWS-1;
 if(c<0)c=0;
@@ -156,15 +139,9 @@ if(c>=COLS)c=COLS-1;
 if(!grid[r])grid[r]=[];
 let placed=false;
 while(r<ROWS&&!placed){
-if(r==0||c<0||c>=COLS||!grid[r]){
+if(r==0||!grid[r-1]||!grid[r-1][c]){
 if(!grid[r])grid[r]=[];
-grid[r][c]={color:currentBall.color,emoji:currentBall.emoji};
-placed=true;
-break;
-}
-if(r>=1&&grid[r-1]&&grid[r-1][c]){
-if(!grid[r])grid[r]=[];
-grid[r][c]={color:currentBall.color,emoji:currentBall.emoji};
+grid[r][c]=currentBall.color;
 placed=true;
 break;
 }
@@ -174,79 +151,42 @@ if(placed){
 let matches=findMatches(r,c);
 if(matches.length>=3){
 let removed=removeBubbles(matches);
-score+=removed*10;
+if(matches.length===3)score+=10;
+else if(matches.length===4){score+=25;}else{score+=50+(matches.length-5)*10;}
 document.getElementById('score').textContent='Очки: '+score;
 }
+movesLeft--;
+document.getElementById('moves').textContent='Ходы: '+movesLeft;
 if(checkGameOver()){
-endGame();
+alert('Игра окончена! Ваш счёт: '+score);
 return;
 }
-let idx=Math.floor(Math.random()*COLORS.length);
-currentBall.color=COLORS[idx];
-currentBall.emoji=EMOJIS[idx];
+currentBall.color=nextColor;
+nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
 draw();
 }
 };
 
+canvas.onmousemove=(e)=>{
+let rect=canvas.getBoundingClientRect();
+mouseX=e.clientX-rect.left;
+mouseY=e.clientY-rect.top;
+draw();
+};
+
 function startGame(){
-document.getElementById('menu').classList.remove('active');
-document.getElementById('game').classList.add('active');
 initGrid();
 score=0;
+movesLeft=30;
 document.getElementById('score').textContent='Очки: 0';
-document.getElementById('highScore').textContent='Рекорд: '+highScore;
-let idx=Math.floor(Math.random()*COLORS.length);
-currentBall.color=COLORS[idx];
-currentBall.emoji=EMOJIS[idx];
+document.getElementById('moves').textContent='Ходы: 30';
+currentBall.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+nextColor=COLORS[Math.floor(Math.random()*COLORS.length)];
 draw();
 }
 
-function backToMenu(){
-document.getElementById('game').classList.remove('active');
-document.getElementById('leaderboard').classList.remove('active');
-document.getElementById('menu').classList.add('active');
-}
-
-function endGame(){
-if(score>highScore){
-highScore=score;
-localStorage.setItem('highScore',highScore);
-}
-let name=prompt('Введите ваше имя:','Player');
-if(name&&score>0){
-let records=JSON.parse(localStorage.getItem('records'))||[];
-records.push({name,score,date:new Date().toLocaleDateString()});
-records.sort((a,b)=>b.score-a.score).slice(0,10);
-localStorage.setItem('records',JSON.stringify(records));
-}
-showLeaderboard();
-}
-
-function showLeaderboard(){
-let records=JSON.parse(localStorage.getItem('records'))||[];
-let table=document.getElementById('leaderboardTable');
-table.innerHTML='<tr><td>#{}</td><td>Имя</td><td>Очки</td><td>Дата</td></tr>';
-records.slice(0,10).forEach((r,i)=>{
-table.innerHTML+='<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td>'+r.score+'</td><td>'+r.date+'</td></tr>';
-});
-document.getElementById('game').classList.remove('active');
-document.getElementById('menu').classList.remove('active');
-document.getElementById('leaderboard').classList.add('active');
-}
-
-for(let i=0;i<100;i++){
-const star=document.createElement('div');
-star.className='star';
-star.style.width=star.style.height=Math.random()*3+'px';
-star.style.left=Math.random()*100+'%';
-star.style.top=Math.random()*100+'%';
-document.getElementById('stars').appendChild(star);
-}
-
-document.getElementById('playBtn').addEventListener('click',startGame);
-document.getElementById('recordsBtn').addEventListener('click',showLeaderboard);
-document.getElementById('menuBtn').addEventListener('click',backToMenu);
-document.getElementById('backBtn').addEventListener('click',backToMenu);
+document.getElementById('restart').addEventListener('click',startGame);
+startGame();
 </script>
 </body>
 </html>
