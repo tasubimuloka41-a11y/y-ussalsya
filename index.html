@@ -1,481 +1,194 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Дурак — одиночная игра (GSAP)</title>
-
-  <!-- ====== СТИЛИ ====== -->
-  <style>
-    :root{
-      --bg:#0d0f12; --panel:#151922; --text:#eaeef7; --gold:#d6a542;
-      --shadow:rgba(0,0,0,.35);
-      --red:#cc2a2a; --black:#111;
-      --cardW:92px; --cardH:132px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;}
-    header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #222}
-    h1{margin:0;color:var(--gold);font-weight:700;letter-spacing:.3px}
-
-    main{padding:16px;display:grid;gap:12px}
-    .row{display:grid;grid-template-columns:1fr 320px;gap:12px}
-    .panel{background:var(--panel);border-radius:12px;border:1px solid rgba(214,165,66,.25);padding:12px}
-
-    #deck{width:var(--cardW);height:var(--cardH);
-      background:linear-gradient(135deg,#1a1f29,#2b2f3a);
-      border:1px solid rgba(214,165,66,.35);border-radius:8px;
-      box-shadow:0 10px 20px var(--shadow);}
-    #status{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    #status .badge{padding:6px 10px;border:1px solid rgba(214,165,66,.35);border-radius:10px;color:var(--gold)}
-    #board,#hand{display:flex;flex-wrap:wrap;gap:10px;min-height:140px}
-
-    .card{
-      position:relative;width:var(--cardW);height:var(--cardH);
-      background:#fafafa;border-radius:8px;border:1px solid #ccc;
-      box-shadow:0 12px 24px var(--shadow);
-      transition:transform .2s ease, box-shadow .2s ease; cursor:pointer; user-select:none;
-    }
-    .card:hover{transform:translateY(-4px); box-shadow:0 18px 30px rgba(0,0,0,.5)}
-    .card.red{color:var(--red)} .card.black{color:var(--black)}
-    .pip{position:absolute}
-    .rankTop{left:8px;top:6px;font-weight:700}
-    .suitTop{left:10px;top:28px;font-size:14px}
-    .center{left:50%;top:50%;transform:translate(-50%,-50%);font-size:28px;opacity:.85}
-    .rankBot{right:8px;bottom:28px;font-weight:700}
-    .suitBot{right:10px;bottom:6px;font-size:14px}
-    .disabled{opacity:.35;pointer-events:none}
-    .dealing{opacity:0}
-
-    #controls{display:flex;gap:8px;flex-wrap:wrap}
-    button{
-      background:linear-gradient(135deg,#2b2f3a,#1a1f29);
-      color:var(--gold);border:1px solid rgba(214,165,66,.35);
-      border-radius:10px;padding:8px 12px;cursor:pointer
-    }
-    button:disabled{opacity:.4;cursor:not-allowed}
-    #log{max-height:220px;overflow:auto;font-size:13px}
-    #end{font-weight:700;color:var(--gold)}
-    @media(max-width:860px){ .row{grid-template-columns:1fr} }
-  </style>
-
-  <!-- ====== GSAP (CDN) ====== -->
-  https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js</script>
-  <script src="https://cdnjs.cloudflares/gsap/3.12.2/MotionPathPlugin.min.js</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DURAK</title>
+    <style>
+        *{margin:0;padding:0}
+        body{width:100vw;height:100vh;background:linear-gradient(135deg,#1a5f2f,#2d8659);font-family:Arial;display:flex;align-items:center;justify-content:center;color:#fff;overflow:hidden}
+        #game{width:1200px;height:700px;background:rgba(0,0,0,0.3);border:3px solid #4CAF50;border-radius:10px;padding:20px;display:flex;flex-direction:column}
+        #top-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:18px}
+        #trump{display:flex;align-items:center;gap:10px}
+        .trump-card{width:60px;height:80px;background:#fff;border:2px solid #333;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:24px;color:#000}
+        #deck-info{text-align:right}
+        #status{font-size:20px;margin-bottom:20px;height:30px}
+        #board{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:20px;flex:1;overflow:auto}
+        #hand{display:flex;gap:10px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
+        .card{width:60px;height:90px;background:#fff;border:2px solid #333;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer;font-size:18px;transition:0.2s}
+        .card.hearts{color:#e74c3c}
+        .card.diamonds{color:#e74c3c}
+        .card.clubs{color:#000}
+        .card.spades{color:#000}
+        .card:hover{transform:scale(1.1);box-shadow:0 0 10px #FFD700}
+        #buttons{display:flex;gap:10px;justify-content:center}
+        .btn{padding:10px 20px;background:#4CAF50;color:#fff;border:none;border-radius:5px;font-size:16px;cursor:pointer}
+        .btn:hover{background:#45a049}
+    </style>
 </head>
 <body>
-<header>
-  <h1>Дурак — одиночная игра</h1>
-  <div>
-    <button id="newGame">Новая игра</button>
-  </div>
-</header>
-
-<main class="row">
-  <!-- Левая колонка: стол, рука, колода -->
-  <section class="panel">
-    <div id="status">
-      <span id="trump" class="badge">Козырь: —</span>
-      <span id="turn" class="badge">Ход: —</span>
-      <span id="talon" class="badge">Талон: 36</span>
+    <div id="game">
+        <div id="top-info">
+            <div id="trump">Козырь: <div class="trump-card" id="trumpCard"></div></div>
+            <div id="deck-info">Карт: <span id="deckCount">0</span></div>
+        </div>
+        <div id="status">Начало</div>
+        <div id="board"></div>
+        <div id="hand"></div>
+        <div id="buttons">
+            <button class="btn" id="beatBtn">Отбить</button>
+            <button class="btn" id="passBtn">Пасс</button>
+        </div>
     </div>
-
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <div id="deck" title="Колода/талон"></div>
-      <div id="controls">
-        <button id="btnAttack" disabled>Атаковать</button>
-        <button id="btnDefend" disabled>Защитить</button>
-        <button id="btnTake"   disabled>Взять</button>
-        <button id="btnPass"   disabled>Отбой</button>
-      </div>
-    </div>
-
-    <h3 style="margin:8px 0">Стол</h3>
-    <div id="board"></div>
-
-    <h3 style="margin:12px 0">Моя рука</h3>
-    <div id="hand"></div>
-  </section>
-
-  <!-- Правая колонка: информация/лог -->
-  <aside class="panel">
-    <div><strong>Соперник (бот)</strong>: играет корректно, выбирает минимальные карты для атаки/защиты.</div>
-    <div id="end" style="margin:10px 0"></div>
-    <h3 style="margin-top:16px">Лог</h3>
-    <div id="log"></div>
-  </aside>
-</main>
-
-<!-- ====== ЛОГИКА ИГРЫ ====== -->
-<script>
-/* ------------------ Базовые утилиты и данные ------------------ */
-const RANKS = ['6','7','8','9','10','J','Q','K','A'];
-const SUITS = ['S','H','D','C']; // Spades, Hearts, Diamonds, Clubs
-const suitSymbol = s => ({S:'♠',H:'♥',D:'♦',C:'♣'})[s];
-const suitColorClass = s => (s==='H'||s==='D') ? 'red' : 'black';
-const rIdx = r => RANKS.indexOf(r);
-
-function buildDeck(){ const d=[]; for(const s of SUITS) for(const r of RANKS) d.push({r,s,id:`${r}${s}`}); return d; }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function beats(att, def, trump){
-  if(def.s===att.s && rIdx(def.r)>rIdx(att.r)) return true;
-  if(def.s!==att.s && def.s===trump && att.s!==trump) return true;
-  return false;
-}
-
-/* ------------------ Состояние ------------------ */
-let state;
-const deckEl = document.querySelector('#deck');
-const boardEl= document.querySelector('#board');
-const handEl = document.querySelector('#hand');
-const logEl  = document.querySelector('#log');
-
-const ui = {
-  trump:  document.querySelector('#trump'),
-  turn:   document.querySelector('#turn'),
-  talon:  document.querySelector('#talon'),
-  end:    document.querySelector('#end'),
-  newGame:document.querySelector('#newGame'),
-  btnAttack:document.querySelector('#btnAttack'),
-  btnDefend:document.querySelector('#btnDefend'),
-  btnTake:  document.querySelector('#btnTake'),
-  btnPass:  document.querySelector('#btnPass')
-};
-
-/* ------------------ Инициализация ------------------ */
-function initGame(){
-  const deck = shuffle(buildDeck());
-  const trumpCard = deck[deck.length-1];
-  const trump = trumpCard.s;
-
-  const you   = deck.splice(0,6);
-  const bot   = deck.splice(0,6);
-
-  // первый атакующий — владелец минимального козыря
-  const minTrumpYou = you.filter(c=>c.s===trump).sort((a,b)=>rIdx(a.r)-rIdx(b.r))[0] || {r:'A'};
-  const minTrumpBot = bot.filter(c=>c.s===trump).sort((a,b)=>rIdx(a.r)-rIdx(b.r))[0] || {r:'A'};
-  const attacker = (rIdx(minTrumpYou.r) < rIdx(minTrumpBot.r)) ? 'you' : 'bot';
-
-  state = {
-    trump, deck, table: null, discard: [],
-    hands: { you, bot },
-    attacker, defender: attacker==='you' ? 'bot' : 'you',
-    phase: 'attack', // 'attack' | 'defense' | 'refill'
-    selected: null,  // выбранная игроком карта при атаке/защите
-    finished: false
-  };
-
-  ui.end.textContent = '';
-  boardEl.innerHTML = '';
-  logEl.innerHTML = '';
-  renderHands();
-  updateHeader();
-  dealAnimationAll(); // GSAP анимация: раздача из #deck в руку
-
-  if(state.attacker==='bot') setTimeout(botAttack, 800);
-}
-
-/* ------------------ Рендер карты ------------------ */
-function cardEl(card){
-  const el = document.createElement('div');
-  el.className = `card ${suitColorClass(card.s)}`;
-  el.dataset.id = card.id;
-  el.innerHTML = `
-    <div class="pip rankTop">${card.r}</div>
-    <div class="pip suitTop">${suitSymbol(card.s)}</div>
-    <div class="pip center">${suitSymbol(card.s)}</div>
-    <div class="pip rankBot">${card.r}</div>
-    <div class="pip suitBot">${suitSymbol(card.s)}</div>
-  `;
-  return el;
-}
-function renderHands(){
-  handEl.innerHTML = '';
-  state.hands.you.forEach(c=>{
-    const el = cardEl(c);
-    el.onclick = ()=>onCardClick(c);
-    handEl.appendChild(el);
-  });
-}
-function updateHeader(){
-  ui.trump.textContent = `Козырь: ${suitSymbol(state.trump)}`;
-  ui.turn.textContent  = `Ход: ${state.attacker==='you'?'Вы':'Бот'}`;
-  ui.talon.textContent = `Талон: ${state.deck.length}`;
-}
-
-/* ------------------ GSAP: анимации ------------------ */
-// Раздача всех карт вам (бот раздаём вне экрана)
-function dealAnimationAll(){
-  const deckBox = deckEl.getBoundingClientRect();
-  const cards = Array.from(handEl.querySelectorAll('.card'));
-  cards.forEach(el=>el.classList.add('dealing'));
-
-  cards.forEach((el,i)=>{
-    const box = el.getBoundingClientRect();
-    const dx = (deckBox.left + deckBox.width/2) - (box.left + box.width/2);
-    const dy = (deckBox.top  + deckBox.height/2) - (box.top  + box.height/2);
-    gsap.fromTo(el,{opacity:0,x:dx,y:dy,scale:0.9,rotate:(Math.random()*10-5)},
-      {opacity:1,x:0,y:0,scale:1,rotate:0,duration:.45,ease:'power2.out',delay:i*.1});
-    setTimeout(()=>el.classList.remove('dealing'), 600+i*100);
-  });
-}
-// Перелёт из руки на стол
-function animateToBoard(card){
-  const el = handEl.querySelector(`[data-id="${card.id}"]`);
-  const ghost = el.cloneNode(true);
-  document.body.appendChild(ghost);
-  const from = el.getBoundingClientRect();
-  const toBox = boardEl.getBoundingClientRect();
-
-  ghost.style.position='fixed';
-  ghost.style.left = from.left+'px'; ghost.style.top = from.top+'px';
-  ghost.style.zIndex='999';
-
-  const targetX = (toBox.left + 20 + Math.random()*20) - from.left;
-  const targetY = (toBox.top  + 20 + Math.random()*10) - from.top;
-
-  gsap.to(ghost,{x:targetX,y:targetY,rotate:(Math.random()*10-5),duration:.35,ease:'power2.out',
-    onComplete:()=>{
-      ghost.remove();
-      boardEl.appendChild(cardEl(card));
-    }});
-}
-// Сброс карт в отбой
-function animateDiscard(){
-  const tableCards = Array.from(boardEl.querySelectorAll('.card'));
-  tableCards.forEach((el,i)=>{
-    const b = el.getBoundingClientRect();
-    const dx = (deckEl.getBoundingClientRect().left - b.left);
-    const dy = (deckEl.getBoundingClientRect().top  - b.top );
-    gsap.to(el,{x:dx,y:dy,opacity:0,scale:.8,rotate:(Math.random()*20-10),duration:.35,delay:i*.05,
-      onComplete:()=>el.remove()});
-  });
-}
-
-/* ------------------ Игровые действия ------------------ */
-function log(msg){ const p=document.createElement('div'); p.textContent=msg; logEl.appendChild(p); logEl.scrollTop=logEl.scrollHeight; }
-
-function onCardClick(card){
-  if(state.finished) return;
-  if(state.attacker!=='you' && state.phase!=='defense') return;
-
-  if(state.attacker==='you' && state.phase==='attack'){
-    state.selected = card;
-    ui.btnAttack.disabled = false;
-    ui.btnPass.disabled   = true;
-    ui.btnDefend.disabled = true;
-    ui.btnTake.disabled   = true;
-  }
-  else if(state.phase==='defense' && state.defender==='you'){
-    // Проверяем, бьёт ли карта атакующую на столе
-    if(!state.table) return;
-    const ok = beats(state.table.attack, card, state.trump);
-    ui.btnDefend.disabled = !ok;
-    state.selected = ok ? card : null;
-  }
-}
-
-ui.btnAttack.onclick = ()=>{
-  if(!state.selected) return;
-  // Снимаем карту из руки, кладём на стол с анимацией
-  removeFromHand('you', state.selected);
-  state.table = { attack: state.selected, defense: null };
-  animateToBoard(state.selected);
-  log(`Вы атаковали: ${state.selected.r}${suitSymbol(state.selected.s)}`);
-
-  ui.btnAttack.disabled = true;
-  state.phase='defense'; state.defender='bot';
-  setTimeout(botDefend, 700);
-};
-
-ui.btnDefend.onclick = ()=>{
-  if(!state.selected || !state.table) return;
-  removeFromHand('you', state.selected);
-  state.table.defense = state.selected;
-  animateToBoard(state.selected);
-  log(`Вы защитились: ${state.selected.r}${suitSymbol(state.selected.s)}`);
-  endBout(true);
-};
-
-ui.btnTake.onclick = ()=>{
-  if(!state.table) return;
-  // взять обе карты
-  takeCards('you', [state.table.attack, ...(state.table.defense?[state.table.defense]:[])]);
-  log(`Вы взяли карты.`);
-  clearTable();
-  nextTurnAfterTake();
-};
-
-ui.btnPass.onclick = ()=>{
-  // отбой доступен только если на столе есть пара и защита удалась (в нашем упрощении — сразу после защиты)
-  // кнопку активируем из endBout(true)
-};
-
-/* ------------------ Ход бота ------------------ */
-function botAttack(){
-  if(state.finished) return;
-  // выбираем минимальную карту для атаки: сначала не-козыри, затем козыри
-  const hand = state.hands.bot.slice().sort((a,b)=>{
-    const ta = a.s===state.trump, tb=b.s===state.trump;
-    if(ta!==tb) return ta?1:-1;
-    return rIdx(a.r)-rIdx(b.r);
-  });
-  const card = hand[0];
-  removeFromHand('bot', card);
-  state.table = { attack: card, defense: null };
-  // Анимация: летит на стол "сверху" (холостая, имитируем как из колоды)
-  boardEl.appendChild(cardEl(card));
-  log(`Бот атакует: ${card.r}${suitSymbol(card.s)}`);
-
-  state.phase='defense'; state.defender='you';
-  highlightDefendOptions();
-}
-
-function botDefend(){
-  if(!state.table) return;
-  const att = state.table.attack;
-  const options = state.hands.bot.filter(c=>beats(att,c,state.trump))
-                 .sort((a,b)=>rIdx(a.r)-rIdx(b.r));
-  if(options.length){
-    const def = options[0];
-    removeFromHand('bot', def);
-    state.table.defense = def;
-    boardEl.appendChild(cardEl(def));
-    log(`Бот защитился: ${def.r}${suitSymbol(def.s)}`);
-    endBout(true); // защита удалась
-  } else {
-    // бот берёт
-    takeCards('bot', [att]);
-    log(`Бот взял карту.`);
-    clearTable();
-    nextTurnAfterTake();
-  }
-}
-
-/* ------------------ Завершение взятки/раунда ------------------ */
-function endBout(defenseSucceeded){
-  // Сброс в отбой
-  animateDiscard();
-  if(state.table?.attack) state.discard.push(state.table.attack);
-  if(state.table?.defense) state.discard.push(state.table.defense);
-
-  clearTable();
-
-  // Добор до 6: сначала атакующий, затем защитившийся
-  refill();
-
-  // Следующий ход: если защита удалась — атакует следующий (защитник);
-  // если нет (взял) — атакует тот же игрок снова (в упрощённой версии — следующий после взявшего).
-  if(defenseSucceeded){
-    const nextAtt = state.defender;
-    state.attacker = nextAtt;
-    state.defender = nextAtt==='you'?'bot':'you';
-    log(`Отбой. Атакует: ${state.attacker==='you'?'Вы':'Бот'}`);
-  }
-  updateHeader();
-
-  checkEnd();
-
-  if(!state.finished){
-    state.phase='attack';
-    if(state.attacker==='bot') setTimeout(botAttack, 600);
-    else { highlightAttackOptions(); }
-  }
-}
-
-function nextTurnAfterTake(){
-  // Взял — добор, и ход переходит к следующему игроку (кроме тонкостей; для простоты — следующий)
-  refill();
-  state.attacker = state.attacker==='you'?'bot':'you';
-  state.defender = state.attacker==='you'?'bot':'you';
-  state.phase='attack';
-  updateHeader();
-  checkEnd();
-  if(!state.finished){
-    if(state.attacker==='bot') setTimeout(botAttack, 600);
-    else highlightAttackOptions();
-  }
-}
-
-function clearTable(){ state.table=null; boardEl.innerHTML=''; }
-
-/* ------------------ Добор и окончание игры ------------------ */
-function refill(){
-  const order = [state.attacker, state.defender];
-  for(const who of order){
-    while(state.hands[who].length<6 && state.deck.length){
-      const c = state.deck.shift();
-      state.hands[who].push(c);
-      if(who==='you'){
-        const el = cardEl(c); el.classList.add('dealing'); handEl.appendChild(el);
-        // анимация добора из колоды в руку
-        const deckBox = deckEl.getBoundingClientRect();
-        const box = el.getBoundingClientRect();
-        const dx = (deckBox.left + deckBox.width/2) - (box.left + box.width/2);
-        const dy = (deckBox.top  + deckBox.height/2) - (box.top  + box.height/2);
-        gsap.fromTo(el,{opacity:0,x:dx,y:dy,scale:0.92},{opacity:1,x:0,y:0,scale:1,duration:.35,ease:'power2.out'});
-        setTimeout(()=>el.classList.remove('dealing'), 400);
-        el.onclick = ()=>onCardClick(c);
-      }
-    }
-  }
-  updateHeader();
-}
-
-function checkEnd(){
-  const youEmpty = state.hands.you.length===0;
-  const botEmpty = state.hands.bot.length===0;
-  if(state.deck.length===0 && (youEmpty||botEmpty)){
-    state.finished = true;
-    if(youEmpty && !botEmpty) ui.end.textContent = 'Победа! Вы вышли из карт.';
-    else if(botEmpty && !youEmpty) ui.end.textContent = 'Поражение. Бот вышел из карт.';
-    else ui.end.textContent = 'Ничья (оба вышли одновременно).';
-    ui.btnAttack.disabled=ui.btnDefend.disabled=ui.btnTake.disabled=ui.btnPass.disabled=true;
-  }
-}
-
-/* ------------------ Хелперы рук ------------------ */
-function removeFromHand(who, card){
-  const i = state.hands[who].findIndex(c=>c.id===card.id);
-  if(i>=0) state.hands[who].splice(i,1);
-  if(who==='you'){
-    const el = handEl.querySelector(`[data-id="${card.id}"]`);
-    if(el) el.remove();
-  }
-}
-function takeCards(who, cards){
-  for(const c of cards) state.hands[who].push(c);
-  if(who==='you'){
-    cards.forEach(c=>{
-      const el = cardEl(c); handEl.appendChild(el); el.onclick = ()=>onCardClick(c);
-      // небольшая анимация "появления"
-      gsap.fromTo(el,{opacity:0,scale:.95},{opacity:1,scale:1,duration:.25});
-    });
-  }
-}
-
-/* ------------------ Подсветка доступных действий ------------------ */
-function highlightAttackOptions(){
-  ui.btnAttack.disabled=true; ui.btnPass.disabled=true; ui.btnDefend.disabled=true; ui.btnTake.disabled=true;
-  Array.from(handEl.children).forEach(el=>el.classList.remove('disabled'));
-}
-function highlightDefendOptions(){
-  ui.btnAttack.disabled=true; ui.btnPass.disabled=true; ui.btnDefend.disabled=true; ui.btnTake.disabled=false;
-  // подсветим только бьющие карты
-  const att = state.table.attack;
-  Array.from(handEl.children).forEach(el=>{
-    const id = el.dataset.id;
-    const c = state.hands.you.find(x=>x.id===id);
-    const ok = beats(att,c,state.trump);
-    if(!ok) el.classList.add('disabled'); else el.classList.remove('disabled');
-  });
-}
-
-/* ------------------ Старт ------------------ */
-ui.newGame.onclick = initGame;
-initGame();
-</script>
+    <script>
+        const SUITS={H:'♥',D:'♦',C:'♣',S:'♠'};
+        const SUIT_NAMES={H:'hearts',D:'diamonds',C:'clubs',S:'spades'};
+        const VALUES={2:'2',3:'3',4:'4',5:'5',6:'6',7:'7',8:'8',9:'9',10:'10',J:'J',Q:'Q',K:'K',A:'A'};
+        const RANK_ORDER={2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,J:11,Q:12,K:13,A:14};
+        
+        let game={deck:[],player:[],bot:[],table:[],trump:null,turn:'player',maxPairs:3};
+        
+        function makeDeck(){const d=[];for(let s in SUITS)for(let v in VALUES)d.push({suit:s,val:v});return d.sort(()=>Math.random()-0.5)}
+        function cardStr(c){return VALUES[c.val]+SUITS[c.suit]}
+        function getSuit(s){return SUIT_NAMES[s]}
+        function canBeat(a,d){return(d.suit===a.suit&&RANK_ORDER[d.val]>RANK_ORDER[a.val])||(d.val===a.val)}
+        
+        function initGame(){
+            game.deck=makeDeck();
+            game.player=[];
+            game.bot=[];
+            game.table=[];
+            for(let i=0;i<6;i++){
+                if(game.deck.length>0)game.player.push(game.deck.pop());
+                if(game.deck.length>0)game.bot.push(game.deck.pop());
+            }
+            game.trump=game.deck[game.deck.length-1];
+            game.turn='player';
+            render();
+        }
+        
+        function render(){
+            let status='';n            if(game.turn==='player'){
+                if(game.table.length===0)status='Ходи или пасс';
+                else{
+                    let undefended=game.table.find(p=>!p.defend);
+                    status=undefended?'Защищайся!':'Ходи или пасс';
+                }
+            }else if(game.turn==='bot')status='Ход бота...';
+            else status=game.turn;
+            
+            document.getElementById('status').textContent=status;
+            document.getElementById('deckCount').textContent=game.deck.length;
+            
+            let tc=document.getElementById('trumpCard');
+            if(game.trump){
+                tc.className='trump-card '+getSuit(game.trump.suit);
+                tc.textContent=cardStr(game.trump);
+            }
+            
+            let bd=document.getElementById('board');
+            bd.innerHTML='';
+            for(let p of game.table){
+                let div=document.createElement('div');
+                div.style.textAlign='center';
+                let ac=`<div class="card ${getSuit(p.attack.suit)}" style="margin-bottom:5px">${cardStr(p.attack)}</div>`;
+                let dc=p.defend?`<div class="card ${getSuit(p.defend.suit)}">${cardStr(p.defend)}</div>`:'<div style="color:#999">?</div>';
+                div.innerHTML=ac+dc;
+                bd.appendChild(div);
+            }
+            
+            let hd=document.getElementById('hand');
+            hd.innerHTML='';
+            for(let i=0;i<game.player.length;i++){
+                let c=document.createElement('div');
+                let card=game.player[i];
+                c.className='card '+getSuit(card.suit);
+                c.textContent=cardStr(card);
+                c.style.cursor=game.turn==='player'?'pointer':'default';
+                c.style.opacity=game.turn==='player'?'1':'0.5';
+                c.onclick=()=>game.turn==='player'&&playCard(i);
+                hd.appendChild(c);
+            }
+        }
+        
+        function playCard(idx){
+            let card=game.player[idx];
+            let undefended=game.table.find(p=>!p.defend);
+            
+            if(undefended){
+                if(canBeat(undefended.attack,card)){
+                    undefended.defend=card;
+                    game.player.splice(idx,1);
+                    render();
+                    setTimeout(botTurn,800);
+                }else alert('Не может защитить!');
+            }else if(game.table.length<game.maxPairs){
+                game.table.push({attack:card,defend:null});
+                game.player.splice(idx,1);
+                render();
+                setTimeout(botTurn,800);
+            }else alert('Невозможно!');
+        }
+        
+        function botTurn(){
+            let undefended=game.table.find(p=>!p.defend);
+            if(undefended&&game.bot.length>0){
+                let found=false;
+                for(let i=0;i<game.bot.length;i++){
+                    if(canBeat(undefended.attack,game.bot[i])){
+                        undefended.defend=game.bot[i];
+                        game.bot.splice(i,1);
+                        found=true;
+                        break;
+                    }
+                }
+                if(!found){
+                    game.turn='Вы взяли карты';
+                    render();
+                    setTimeout(()=>{
+                        game.player=game.player.concat(game.table.map(p=>p.attack),game.table.filter(p=>p.defend).map(p=>p.defend));
+                        game.table=[];
+                        startRound();
+                    },2000);
+                    return;
+                }
+                render();
+                setTimeout(playerTurn,800);
+            }else if(game.table.length>0){
+                game.turn='Раунд выигран';
+                render();
+                setTimeout(()=>{
+                    game.table=[];
+                    refill();
+                    startRound();
+                },2000);
+            }else playerTurn();
+        }
+        
+        function playerTurn(){game.turn='player';render()}
+        function refill(){
+            while(game.deck.length>0&&game.player.length<6)game.player.push(game.deck.pop());
+            while(game.deck.length>0&&game.bot.length<6)game.bot.push(game.deck.pop());
+            if(game.deck.length===0&&game.player.length===0){game.turn='Вы выиграли!';render();setTimeout(()=>initGame(),3000);return}
+        }
+        function startRound(){refill();playerTurn()}
+        
+        initGame();
+        
+        document.getElementById('beatBtn').onclick=()=>{
+            if(game.turn==='player'&&game.table.length>0){
+                let undefended=game.table.find(p=>!p.defend);
+                if(undefended&&game.player.length>0){
+                    for(let i=0;i<game.player.length;i++){
+                        if(canBeat(undefended.attack,game.player[i])){playCard(i);return}
+                    }
+                }
+            }
+        };
+        
+        document.getElementById('passBtn').onclick=()=>{
+            if(game.turn==='player'){game.turn='bot';render();setTimeout(botTurn,800)}
+        };
+    </script>
 </body>
 </html>
