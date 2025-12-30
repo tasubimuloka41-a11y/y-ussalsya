@@ -19,6 +19,10 @@
       border: 3px solid #4CAF50; border-radius: 10px;
       padding: 20px; display: flex; flex-direction: column;
     }
+    #top-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 18px; }
+    #trump { display: flex; align-items: center; gap: 10px; }
+    .trump-card { width: 50px; height: 75px; background: #fff; border: 2px solid #333; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; }
+    #deck-info { text-align: right; }
     #status { font-size: 20px; margin-bottom: 20px; height: 30px; min-height: 30px; }
     #board {
       display: grid; grid-template-columns: repeat(5, 1fr);
@@ -43,6 +47,15 @@
 </head>
 <body>
   <div id="game">
+    <div id="top-info">
+      <div id="trump">
+        <span>Козырь:</span>
+        <div class="trump-card" id="trumpCard"></div>
+      </div>
+      <div id="deck-info">
+        <div>Карт в колоде: <span id="deckCount">0</span></div>
+      </div>
+    </div>
     <div id="status">Начало игры</div>
     <div id="board"></div>
     <div id="hand"></div>
@@ -63,6 +76,7 @@
       player: [],
       bot: [],
       table: [],
+      trump: null,
       turn: 'player',
       maxPairs: 3
     };
@@ -95,12 +109,14 @@
       gameState.player = [];
       gameState.bot = [];
       gameState.table = [];
-      gameState.turn = 'player';
       
       for (let i = 0; i < 6; i++) {
         if (gameState.deck.length > 0) gameState.player.push(gameState.deck.pop());
         if (gameState.deck.length > 0) gameState.bot.push(gameState.deck.pop());
       }
+      
+      gameState.trump = gameState.deck[gameState.deck.length - 1];
+      gameState.turn = 'player';
     }
 
     function render() {
@@ -120,6 +136,14 @@
         status.textContent = 'Ход бота...';
       } else {
         status.textContent = gameState.turn;
+      }
+
+      document.getElementById('deckCount').textContent = gameState.deck.length;
+      
+      const trumpEl = document.getElementById('trumpCard');
+      if (gameState.trump) {
+        trumpEl.className = 'trump-card ' + getSuitClass(gameState.trump.suit);
+        trumpEl.textContent = cardStr(gameState.trump);
       }
 
       const boardEl = document.getElementById('board');
