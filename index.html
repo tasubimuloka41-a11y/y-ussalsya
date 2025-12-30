@@ -1,1 +1,327 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"><title>BUBBLE</title><style>*{margin:0;padding:0}html,body{width:100%;height:100%}body{background:linear-gradient(135deg,#FF00FF,#00FFFF,#FFFF00,#FF0080);overflow:hidden;font-family:Arial}canvas{display:block;width:100%;height:100%}#ui{position:fixed;top:5px;left:50%;transform:translateX(-50%);color:#fff;font-weight:bold;font-size:20px;text-shadow:0 0 5px #000;z-index:10}</style></head><body><div id="ui">SCORE: <span id="s">0</span> | MOVES: <span id="m">30</span></div><canvas id="c"></canvas><script src="https://telegram.org/js/telegram-web-app.js"></script><script>try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}const c=document.getElementById('c'),x=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;const cols=6,rows=8,size=40;const col=['#FF0000','#00FF00','#0000FF','#FFFF00','#FF00FF','#00FFFF','#FF6600'];let grid=[],score=0,moves=30;function init(){grid=[];for(let r=0;r<rows;r++){grid[r]=[];for(let c=0;c<cols;c++){grid[r][c]=Math.floor(Math.random()*col.length)}}score=0;moves=30;document.getElementById('s').innerText=score;document.getElementById('m').innerText=moves;draw()}function getPos(r,c){return{x:c*size+50,y:r*size+80}}function draw(){x.fillStyle='transparent';x.clearRect(0,0,c.width,c.height);for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){if(grid[r][c]!==undefined&&grid[r][c]>=0){let p=getPos(r,c);x.fillStyle=col[grid[r][c]];x.beginPath();x.arc(p.x,p.y,16,0,Math.PI*2);x.fill()}}}x.fillStyle='#FF1493';x.beginPath();x.arc(c.width/2,c.height-40,18,0,Math.PI*2);x.fill()}function shoot(tx,ty){if(moves<=0)return;let sx=c.width/2,sy=c.height-40,dx=tx-sx,dy=ty-sy,d=Math.sqrt(dx*dx+dy*dy);if(d<5)return;let vx=dx/d*7,vy=dy/d*7,bx=sx,by=sy;let int=setInterval(()=>{bx+=vx;by+=vy;if(bx<0||bx>c.width||by<0||by>c.height){clearInterval(int);moves--;document.getElementById('m').innerText=moves;draw();return}let hit=-1;for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){if(grid[r][c]>=0){let p=getPos(r,c);let dst=Math.sqrt((bx-p.x)**2+(by-p.y)**2);if(dst<20){hit=r*1000+c;break}}if(hit>=0)break}if(hit>=0){clearInterval(int);let hr=Math.floor(hit/1000),hc=hit%1000;for(let r=rows-1;r>=0;r--){for(let c=0;c<cols;c++){if(grid[r][c]<0){grid[r][c]=grid[hr][hc];grid[hr][hc]=-1;score+=10;document.getElementById('s').innerText=score;moves--;document.getElementById('m').innerText=moves;draw();if(moves<=0)alert('END');return}}}moves--;document.getElementById('m').innerText=moves;draw();return}draw()},30)}c.onclick=e=>shoot(e.clientX,e.clientY);c.ontouchstart=e=>{e.preventDefault();shoot(e.touches[0].clientX,e.touches[0].clientY)};window.onresize=()=>{c.width=window.innerWidth;c.height=window.innerHeight;draw()};init();</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Shooter Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(135deg, #FF00FF, #00FFFF, #FFFF00, #FF0080);
+            border: 3px solid #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+        
+        .score-moves {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            <div class="score-moves">SCORE: <span id="score">0</span> | MOVES: <span id="moves">30</span></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('gameContainer');
+        
+        // Set canvas size to match container
+        function resizeCanvas() {
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+        resizeCanvas();
+        
+        // Game constants
+        const COLS = 8;
+        const ROWS = 8;
+        const BUBBLE_RADIUS = 18;
+        const BUBBLE_SPACING = 40;
+        const START_X = 50;
+        const START_Y = 50;
+        const GUN_X = canvas.width / 2;
+        const GUN_Y = canvas.height - 50;
+        const GUN_RADIUS = 15;
+        const BULLET_RADIUS = 12;
+        const BULLET_SPEED = 8;
+        
+        // Color palette for bubbles
+        const COLORS = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#FF1493'];
+        const EMPTY = -1;
+        
+        // Game state
+        let grid = [];
+        let score = 0;
+        let moves = 30;
+        let gameOver = false;
+        let bullets = [];
+        
+        // Initialize game grid
+        function initGrid() {
+            grid = [];
+            for (let r = 0; r < ROWS; r++) {
+                grid[r] = [];
+                for (let c = 0; c < COLS; c++) {
+                    // Create more varied patterns for better gameplay
+                    grid[r][c] = Math.floor(Math.random() * COLORS.length);
+                }
+            }
+        }
+        
+        // Get bubble position
+        function getBubblePos(row, col) {
+            return {
+                x: START_X + col * BUBBLE_SPACING,
+                y: START_Y + row * BUBBLE_SPACING
+            };
+        }
+        
+        // Draw a single bubble
+        function drawBubble(x, y, colorIndex) {
+            ctx.beginPath();
+            ctx.arc(x, y, BUBBLE_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = COLORS[colorIndex];
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // Draw the gun at bottom
+        function drawGun() {
+            ctx.beginPath();
+            ctx.arc(GUN_X, GUN_Y, GUN_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = '#00FF00';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // Draw all bubbles
+        function drawBubbles() {
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (grid[r][c] !== EMPTY) {
+                        const pos = getBubblePos(r, c);
+                        drawBubble(pos.x, pos.y, grid[r][c]);
+                    }
+                }
+            }
+        }
+        
+        // Draw all bullets
+        function drawBullets() {
+            for (let bullet of bullets) {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, BULLET_RADIUS, 0, Math.PI * 2);
+                ctx.fillStyle = bullet.color;
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+        
+        // Main draw function
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw all game elements
+            drawBubbles();
+            drawBullets();
+            drawGun();
+        }
+        
+        // Update game state
+        function update() {
+            // Update bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                bullet.x += bullet.vx;
+                bullet.y += bullet.vy;
+                
+                // Check if bullet is out of bounds
+                if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
+                    bullets.splice(i, 1);
+                    continue;
+                }
+                
+                // Check collision with bubbles
+                let hit = false;
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        if (grid[r][c] !== EMPTY) {
+                            const pos = getBubblePos(r, c);
+                            const dist = Math.sqrt((bullet.x - pos.x) ** 2 + (bullet.y - pos.y) ** 2);
+                            
+                            if (dist < BUBBLE_RADIUS + BULLET_RADIUS) {
+                                // Collision detected
+                                const hitColor = grid[r][c];
+                                grid[r][c] = EMPTY;
+                                bullets.splice(i, 1);
+                                score += 10;
+                                document.getElementById('score').innerText = score;
+                                
+                                // Find and remove adjacent bubbles of same color
+                                removeMatchingBubbles(r, c, hitColor);
+                                
+                                hit = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (hit) break;
+                }
+            }
+        }
+        
+        // Remove matching adjacent bubbles (recursive)
+        function removeMatchingBubbles(row, col, color) {
+            const visited = new Set();
+            const toRemove = [];
+            
+            function dfs(r, c) {
+                const key = `${r},${c}`;
+                if (visited.has(key)) return;
+                if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+                if (grid[r][c] === EMPTY || grid[r][c] !== color) return;
+                
+                visited.add(key);
+                toRemove.push({r, c});
+                
+                // Check 4 adjacent cells
+                dfs(r - 1, c);
+                dfs(r + 1, c);
+                dfs(r, c - 1);
+                dfs(r, c + 1);
+            }
+            
+            dfs(row, col);
+            
+            // If we found 3 or more matching bubbles, remove them all
+            if (toRemove.length >= 3) {
+                toRemove.forEach(({r, c}) => {
+                    grid[r][c] = EMPTY;
+                    score += 50;
+                });
+                document.getElementById('score').innerText = score;
+            }
+        }
+        
+        // Shoot a bullet
+        function shoot(targetX, targetY) {
+            if (moves <= 0 || gameOver) return;
+            
+            moves--;
+            document.getElementById('moves').innerText = moves;
+            
+            // Calculate direction
+            const dx = targetX - GUN_X;
+            const dy = targetY - GUN_Y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 5) return;
+            
+            const vx = (dx / dist) * BULLET_SPEED;
+            const vy = (dy / dist) * BULLET_SPEED;
+            
+            // Get a random color for the bullet
+            const bulletColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+            
+            bullets.push({
+                x: GUN_X,
+                y: GUN_Y,
+                vx: vx,
+                vy: vy,
+                color: bulletColor
+            });
+            
+            if (moves <= 0) {
+                gameOver = true;
+                setTimeout(() => {
+                    alert('Game Over! Final Score: ' + score);
+                    location.reload();
+                }, 500);
+            }
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Input handlers
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            shoot(x, y);
+        });
+        
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            shoot(x, y);
+        });
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Start game
+        initGrid();
+        gameLoop();
+    </script>
+</body>
+</html>
