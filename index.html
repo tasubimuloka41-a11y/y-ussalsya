@@ -294,6 +294,7 @@
     <div class="header">
         <h1>🎰 КАЗИНО УГАРА 🎰</h1>
         <div class="balance">💰 Баланс: <span id="balance">1000</span>$</div>
+                <div class="balance">🎯 Побед: <span id="wins">0</span> | 💀 Поражений: <span id="losses">0</span></div>
     </div>
 
     <div class="container">
@@ -324,6 +325,11 @@
             </div>
         </div>
 
+
+                <div class="chat-section" style="margin-bottom: 10px;">
+            <div class="chat-title">📜 ИСТОРИЯ ИГР</div>
+            <div class="chat-box" id="historyBox" style="max-height: 120px;"></div>
+        </div>
         <div class="chat-section">
             <div class="chat-title">💬 ЧАТ</div>
             <div class="chat-box" id="chatBox"></div>
@@ -344,11 +350,16 @@
             bet: 0,
             playerCards: [],
             dealerCards: [],
-            gameInProgress: false
+            gameInProgress: false,
+        wins: 0,
+        losses: 0,
+        history: []
         };
 
         function updateDisplay() {
             document.getElementById('balance').textContent = gameState.balance;
+        document.getElementById('wins').textContent = gameState.wins;
+        document.getElementById('losses').textContent = gameState.losses;
             document.getElementById('playerValue').textContent = calculateValue(gameState.playerCards);
             document.getElementById('dealerValue').textContent = calculateValue(gameState.dealerCards);
         }
@@ -471,6 +482,28 @@
             } else if (result === 'НИЧЬЯ!') {
                 gameState.balance += gameState.bet;
             }
+
+                    // Подсчет побед и поражений
+        if (result.includes('ВЫИГРАЛ') && !result.includes('ДИЛЕР')) {
+            gameState.wins++;
+        } else if (result.includes('ПЕРЕБОР') || result.includes('ДИЛЕР ВЫИГРАЛ')) {
+            gameState.losses++;
+        }
+        
+        // Добавление в историю
+        const historyEntry = `${result} (Ставка: ${gameState.bet}$)`;
+        gameState.history.unshift(historyEntry);
+        if (gameState.history.length > 10) gameState.history.pop();
+        
+        // Обновление истории
+        const historyBox = document.getElementById('historyBox');
+        historyBox.innerHTML = '';
+        gameState.history.forEach(entry => {
+            const entryEl = document.createElement('div');
+            entryEl.className = 'bot-message';
+            entryEl.textContent = entry;
+            historyBox.appendChild(entryEl);
+        });
             
             updateDisplay();
             addBotMessage(result);
