@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Блэкджек 21 — Telegram Game</title>
+<style>
+:root{
+--bg:#0d0f12; --panel:#151922; --text:#eaeef7; --gold:#d6a542;
+--soft:#1a1f29; --accent:#4c79ff; --shadow:rgba(0,0,0,.35);
+--green:#27ae60; --red:#e74c3c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;
+display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.game-container{max-width:800px;width:100%;background:var(--panel);
+border-radius:16px;border:1px solid rgba(214,165,66,.25);padding:24px;box-shadow:0 20px 60px var(--shadow);}
+h1{margin:0 0 20px 0;color:var(--gold);font-size:32px;text-align:center;letter-spacing:.5px;}
+.game-info{display:flex;justify-content:space-around;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.info-card{background:var(--soft);padding:12px 20px;border-radius:10px;
+border:1px solid rgba(214,165,66,.2);text-align:center;flex:1;min-width:140px;}
+.info-label{font-size:12px;opacity:.7;text-transform:uppercase;letter-spacing:.5px;}
+.info-value{font-size:24px;font-weight:700;color:var(--gold);margin-top:4px;}
+.playing-area{margin-bottom:24px;}
+.hand{background:var(--soft);border-radius:12px;padding:20px;margin-bottom:16px;
+border:2px solid rgba(214,165,66,.15);min-height:140px;}
+.hand-title{font-size:14px;text-transform:uppercase;letter-spacing:.5px;
+margin-bottom:12px;opacity:.8;display:flex;justify-content:space-between;align-items:center;}
+.hand-score{font-size:18px;font-weight:700;color:var(--gold);}
+.cards{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.card{width:70px;height:100px;background:linear-gradient(135deg,#fafafa,#e8e8e8);
+border-radius:8px;border:2px solid #ccc;display:flex;align-items:center;
+justify-content:center;font-size:28px;font-weight:700;box-shadow:0 8px 16px var(--shadow);
+transition:transform .2s ease;position:relative;}
+.card:hover{transform:translateY(-4px);}
+.card.red{color:#cc2a2a}
+.card.black{color:#111}
+.card.hidden{background:linear-gradient(135deg,#2b2f3a,#1a1f29);
+border:2px solid rgba(214,165,66,.3);}
+.card.hidden::before{content:'?';color:var(--gold);font-size:36px;}
+.controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+button{background:linear-gradient(135deg,#2b2f3a,#1a1f29);color:var(--gold);
+border:2px solid rgba(214,165,66,.35);border-radius:10px;padding:14px 28px;
+font-size:16px;font-weight:600;cursor:pointer;transition:all .2s ease;
+text-transform:uppercase;letter-spacing:.5px;}
+button:hover:not(:disabled){background:linear-gradient(135deg,#3b3f4a,#2a2f39);
+border-color:rgba(214,165,66,.5);transform:translateY(-2px);box-shadow:0 6px 12px var(--shadow);}
+button:disabled{opacity:.3;cursor:not-allowed;}
+button.primary{background:linear-gradient(135deg,var(--green),#229954);
+border-color:var(--green);color:#fff;}
+button.primary:hover:not(:disabled){background:linear-gradient(135deg,#2ecc71,#27ae60);}
+button.danger{background:linear-gradient(135deg,var(--red),#c0392b);
+border-color:var(--red);color:#fff;}
+button.danger:hover:not(:disabled){background:linear-gradient(135deg,#e74c3c,#c0392b);}
+.result-message{text-align:center;margin-top:20px;font-size:20px;
+font-weight:700;padding:16px;border-radius:10px;background:var(--soft);
+border:2px solid rgba(214,165,66,.3);}
+.result-message.win{color:var(--green);border-color:var(--green);}
+.result-message.lose{color:var(--red);border-color:var(--red);}
+.result-message.push{color:var(--gold);border-color:var(--gold);}
+@media (max-width:600px){
+h1{font-size:24px;}
+.info-value{font-size:20px;}
+.card{width:60px;height:85px;font-size:22px;}
+button{padding:12px 20px;font-size:14px;}
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+<h1>🃏 Блэкджек 21 🎰</h1>
+<div class="game-info">
+<div class="info-card">
+<div class="info-label">Баланс</div>
+<div class="info-value" id="balance">1000</div>
+</div>
+<div class="info-card">
+<div class="info-label">Ставка</div>
+<div class="info-value" id="bet">0</div>
+</div>
+<div class="info-card">
+<div class="info-label">Игр сыграно</div>
+<div class="info-value" id="gamesPlayed">0</div>
+</div>
+</div>
+<div class="playing-area">
+<div class="hand">
+<div class="hand-title">
+<span>💼 Дилер</span>
+<span class="hand-score" id="dealerScore">0</span>
+</div>
+<div class="cards" id="dealerCards"></div>
+</div>
+<div class="hand">
+<div class="hand-title">
+<span>🎮 Вы</span>
+<span class="hand-score" id="playerScore">0</span>
+</div>
+<div class="cards" id="playerCards"></div>
+</div>
+</div>
+<div class="controls">
+<button id="betBtn" class="primary">Сделать ставку ($100)</button>
+<button id="hitBtn" disabled>Взять карту</button>
+<button id="standBtn" disabled>Остановиться</button>
+<button id="doubleBtn" disabled>Удвоить</button>
+<button id="newGameBtn" class="danger">Новая игра</button>
+</div>
+<div id="resultMessage"></div>
+</div>
+<script>
+const SUITS = ['♠','♥','♦','♣'];
+const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+let deck, playerHand, dealerHand, gameState, balance, currentBet, gamesPlayed;
+const ui = {
+balance: document.getElementById('balance'),
+bet: document.getElementById('bet'),
+gamesPlayed: document.getElementById('gamesPlayed'),
+dealerCards: document.getElementById('dealerCards'),
+playerCards: document.getElementById('playerCards'),
+dealerScore: document.getElementById('dealerScore'),
+playerScore: document.getElementById('playerScore'),
+betBtn: document.getElementById('betBtn'),
+hitBtn: document.getElementById('hitBtn'),
+standBtn: document.getElementById('standBtn'),
+doubleBtn: document.getElementById('doubleBtn'),
+newGameBtn: document.getElementById('newGameBtn'),
+resultMessage: document.getElementById('resultMessage')
+};
+function init(){
+balance = 1000;
+currentBet = 0;
+gamesPlayed = 0;
+gameState = 'betting';
+updateUI();
+}
+function createDeck(){
+const d = [];
+for(const suit of SUITS){
+for(const rank of RANKS){
+const isRed = suit==='♥' || suit==='♦';
+d.push({suit, rank, isRed});
+}
+}
+return shuffle(d);
+}
+function shuffle(arr){
+for(let i=arr.length-1; i>0; i--){
+const j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
+return arr;
+}
+function getCardValue(card){
+if(card.rank==='A') return 11;
+if(['K','Q','J'].includes(card.rank)) return 10;
+return parseInt(card.rank);
+}
+function calculateScore(hand){
+let score = 0;
+let aces = 0;
+for(const card of hand){
+const val = getCardValue(card);
+score += val;
+if(card.rank==='A') aces++;
+}
+while(score > 21 && aces > 0){
+score -= 10;
+aces--;
+}
+return score;
+}
+function createCardEl(card, hidden=false){
+const el = document.createElement('div');
+el.className = `card ${hidden ? 'hidden' : (card.isRed ? 'red' : 'black')}`;
+if(!hidden){
+el.textContent = card.rank + card.suit;
+}
+return el;
+}
+function renderCards(){
+ui.dealerCards.innerHTML = '';
+ui.playerCards.innerHTML = '';
+dealerHand.forEach((card, idx) => {
+const hidden = gameState==='playing' && idx===0;
+ui.dealerCards.appendChild(createCardEl(card, hidden));
+});
+playerHand.forEach(card => {
+ui.playerCards.appendChild(createCardEl(card));
+});
+const playerScore = calculateScore(playerHand);
+ui.playerScore.textContent = playerScore;
+if(gameState==='playing'){
+ui.dealerScore.textContent = '?';
+} else {
+ui.dealerScore.textContent = calculateScore(dealerHand);
+}
+}
+function updateUI(){
+ui.balance.textContent = balance;
+ui.bet.textContent = currentBet;
+ui.gamesPlayed.textContent = gamesPlayed;
+ui.betBtn.disabled = gameState!=='betting' || balance<100;
+ui.hitBtn.disabled = gameState!=='playing';
+ui.standBtn.disabled = gameState!=='playing';
+ui.doubleBtn.disabled = gameState!=='playing' || playerHand.length!==2 || balance<currentBet;
+}
+function startGame(){
+if(balance < 100) return;
+currentBet = 100;
+balance -= currentBet;
+gamesPlayed++;
+deck = createDeck();
+playerHand = [deck.pop(), deck.pop()];
+dealerHand = [deck.pop(), deck.pop()];
+gameState = 'playing';
+ui.resultMessage.textContent = '';
+ui.resultMessage.className = 'result-message';
+renderCards();
+updateUI();
+if(calculateScore(playerHand)===21){
+endGame();
+}
+}
+function hit(){
+if(gameState!=='playing') return;
+playerHand.push(deck.pop());
+renderCards();
+const score = calculateScore(playerHand);
+if(score > 21){
+endGame();
+} else if(score === 21){
+stand();
+}
+updateUI();
+}
+function stand(){
+if(gameState!=='playing') return;
+gameState = 'dealer';
+renderCards();
+updateUI();
+setTimeout(dealerPlay, 500);
+}
+function double(){
+if(gameState!=='playing' || playerHand.length!==2 || balance<currentBet) return;
+balance -= currentBet;
+currentBet *= 2;
+updateUI();
+playerHand.push(deck.pop());
+renderCards();
+const score = calculateScore(playerHand);
+if(score > 21){
+endGame();
+} else {
+stand();
+}
+}
+function dealerPlay(){
+let dealerScore = calculateScore(dealerHand);
+while(dealerScore < 17){
+dealerHand.push(deck.pop());
+dealerScore = calculateScore(dealerHand);
+renderCards();
+}
+setTimeout(endGame, 500);
+}
+function endGame(){
+gameState = 'ended';
+const playerScore = calculateScore(playerHand);
+const dealerScore = calculateScore(dealerHand);
+renderCards();
+let result = '';
+let resultClass = '';
+if(playerScore > 21){
+result = '💥 Перебор! Вы проиграли!';
+resultClass = 'lose';
+} else if(dealerScore > 21){
+result = '🎉 Дилер перебрал! Вы выиграли!';
+balance += currentBet * 2;
+resultClass = 'win';
+} else if(playerScore > dealerScore){
+result = '🏆 Вы выиграли!';
+balance += currentBet * 2;
+resultClass = 'win';
+} else if(playerScore < dealerScore){
+result = '😔 Дилер выиграл!';
+resultClass = 'lose';
+} else {
+result = '🤝 Ничья!';
+balance += currentBet;
+resultClass = 'push';
+}
+ui.resultMessage.textContent = result;
+ui.resultMessage.className = `result-message ${resultClass}`;
+currentBet = 0;
+gameState = 'betting';
+updateUI();
+if(balance === 0){
+setTimeout(() => {
+alert('💸 У вас закончились деньги! Начинаем с новым балансом.');
+balance = 1000;
+updateUI();
+}, 1000);
+}
+}
+function newGame(){
+init();
+ui.dealerCards.innerHTML = '';
+ui.playerCards.innerHTML = '';
+ui.dealerScore.textContent = '0';
+ui.playerScore.textContent = '0';
+ui.resultMessage.textContent = '';
+ui.resultMessage.className = 'result-message';
+}
+ui.betBtn.onclick = startGame;
+ui.hitBtn.onclick = hit;
+ui.standBtn.onclick = stand;
+ui.doubleBtn.onclick = double;
+ui.newGameBtn.onclick = newGame;
+init();
+</script>
+</body>
+</html>
