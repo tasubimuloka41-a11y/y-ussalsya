@@ -13,7 +13,6 @@ class AIWebAgent {
     try {
       const response = await fetch(OLLAMA_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: MODEL,
@@ -27,7 +26,7 @@ class AIWebAgent {
       }
 
       const data = await response.json();
-      
+
       if (data.response) {
         return data.response.trim();
       } else {
@@ -41,3 +40,20 @@ class AIWebAgent {
 }
 
 const agent = new AIWebAgent();
+
+// Handle messages from background script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'askAgent') {
+    agent.askModel(request.prompt)
+      .then(response => {
+        sendResponse({ success: true, response: response });
+      })
+      .catch(error => {
+        sendResponse({ success: false, error: error.message });
+      });
+    return true;
+  }
+});
+
+// Expose agent globally for console access
+window.aiAgent = agent;
