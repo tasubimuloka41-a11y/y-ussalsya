@@ -3,16 +3,11 @@
   "name": "AI Web Agent - Comet",
   "version": "1.0",
   "description": "AI powered web automation agent using Ollama",
-  "permissions": [
+  "permissions": [[
     "tabs",
-    "scripting"
-  ],,
+    "scripting",
     "sidePanel"
-  "host_permissions": [
-    "http://127.0.0.1:11435/*"
-  ],
-  "action": {
-    "default_title": "AI Web Agent",
+      ],"default_title": "AI Web Agent",
 "default_side_panel": "sidepanel.html"  },
   "background": {
     "service_worker": "background.js"
