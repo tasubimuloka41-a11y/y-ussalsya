@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ссылки</title>
+    <title>Зеркала</title>
     <style>
         * {
             margin: 0;
@@ -18,57 +18,116 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        .container {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
         
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .card h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
         .button {
-            padding: 20px 40px;
-            border-radius: 50px;
+            padding: 12px 20px;
+            border-radius: 25px;
             border: none;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            display: block;
+            text-align: center;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            color: white;
         }
         
         .youtube-btn {
             background: #FF0000;
-            color: white;
         }
         
         .youtube-btn:hover {
             background: #CC0000;
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(255,0,0,0.3);
         }
         
-        .grok-btn {
-            background: #000000;
-            color: white;
+        .ai-btn {
+            background: #667eea;
         }
         
-        .grok-btn:hover {
-            background: #333333;
+        .ai-btn:hover {
+            background: #5568d3;
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        
+        .ai-btn.alt {
+            background: #764ba2;
+        }
+        
+        .ai-btn.alt:hover {
+            background: #633a89;
+            transform: scale(1.05);
+        }
+        
+        .label {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="https://youtube.com" class="button youtube-btn">YouTube</a>
-        <a href="https://grok.com" class="button grok-btn">Grok</a>
+        <!-- YouTube Зеркала -->
+        <div class="card">
+            <h2>🎥 YouTube</h2>
+            <a href="https://piped.video" class="button youtube-btn">Piped.video</a>
+            <div class="label">Быстрое и стабильное зеркало</div>
+            
+            <a href="https://yewtu.be" class="button youtube-btn">Yewtu.be</a>
+            <div class="label">Invidious инстанс</div>
+            
+            <a href="https://tube.artemislena.eu" class="button youtube-btn">Artemis</a>
+            <div class="label">Ещё одно зеркало</div>
+        </div>
+        
+        <!-- AI Сервисы -->
+        <div class="card">
+            <h2>🤖 AI Сервисы</h2>
+            <a href="https://www.deepseek.com" class="button ai-btn">DeepSeek</a>
+            <div class="label">Мощный AI чат</div>
+            
+            <a href="https://claude.ai" class="button ai-btn alt">Claude</a>
+            <div class="label">Advanced AI</div>
+            
+            <a href="https://www.perplexity.ai" class="button ai-btn">Perplexity</a>
+            <div class="label">AI с поиском</div>
+        </div>
     </div>
 </body>
 </html>
