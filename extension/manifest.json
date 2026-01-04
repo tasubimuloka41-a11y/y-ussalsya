@@ -11,7 +11,7 @@
     "http://127.0.0.1:11435/*"  ],
   "action": {
     "default_title": "AI Web Agent",
-        "default_popup": "popup.html"
+        "default_popup": "popup.html",
   "background": {
     "service_worker": "background.js"
   },
