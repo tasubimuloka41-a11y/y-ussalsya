@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AI Web Agent</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            width: 600px;
+            min-height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+        h1 { font-size: 28px; margin-bottom: 20px; text-align: center; }
+        .container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover { background: #45a049; }
+        button:active { background: #3d8b40; }
+        #output {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            min-height: 50px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 AI Agent</h1>
+    <div class="container">
+        <textarea id="taskInput" placeholder="Введите задачу для AI..."></textarea>
+        <button onclick="runTask()">Запустить</button>
+        <div id="output">Результаты появятся здесь...</div>
+    </div>
+
+    <script>
+        const OLLAMA_URL = 'http://127.0.0.1:11435/api/chat';
+        const MODEL = 'gemma3:12b';
+
+        async function runTask() {
+            const task = document.getElementById('taskInput').value.trim();
+            const output = document.getElementById('output');
+
+            if (!task) {
+                output.textContent = '❌ Пожалуйста, введите задачу!';
+                return;
+            }
+
+            output.textContent = '⏳ Отправка запроса в Ollama...';
+
+            try {
+                const response = await fetch(OLLAMA_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: MODEL,
+                        messages: [{ role: 'user', content: task }],
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const result = data.message?.content || 'Нет ответа';
+                output.textContent = '✅ Ответ от AI:\n\n' + result;
+            } catch (error) {
+                output.textContent = '❌ Ошибка:\n' + error.message;
+            }
+        }
+
+        // Позволить отправку Enter
+        document.getElementById('taskInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                runTask();
+            }
+        });
+    </script>
+</body>
+</html>
