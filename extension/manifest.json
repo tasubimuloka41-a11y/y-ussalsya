@@ -6,11 +6,9 @@
   "permissions": [
     "tabs",
     "scripting",
-    "sidePanel",
-    "webRequest"
+    "sidePanel"
   ],
   "host_permissions": [
-    "https://tasubimuloka41-a11y.github.io/*",
     "https://www.youtube.com/*",
     "https://youtube.com/*",
     "http://127.0.0.1:11434/*",
@@ -23,14 +21,6 @@
     "service_worker": "background.js"
   },
   "content_scripts": [
-    {
-      "matches": [
-        "https://tasubimuloka41-a11y.github.io/y-ussalsya/"
-      ],
-      "js": [
-        "content.js"
-      ]
-    },
     {
       "matches": [
         "https://www.youtube.com/*",
