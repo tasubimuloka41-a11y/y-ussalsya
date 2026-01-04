@@ -1,204 +1,200 @@
 // Content script that injects side panel on all pages
 
-// Create and inject side panel into the page
-function injectSidePanel() {
-  // Check if already injected
-  if (document.getElementById('web-agent-side-panel')) {
-    return;
+(function() {
+  'use strict';
+
+  // Configuration
+  const CONFIG = {
+    PANEL_ID: 'web-agent-side-panel',
+    PANEL_WIDTH: 400,
+    OLLAMA_URL: 'http://127.0.0.1:11434/api/generate'
+  };
+
+  // Create and inject side panel into the page
+  function injectSidePanel() {
+    // Check if already injected
+    if (document.getElementById(CONFIG.PANEL_ID)) {
+      return;
+    }
+
+    // Create container for side panel
+    const container = document.createElement('div');
+    container.id = CONFIG.PANEL_ID;
+    container.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: ${CONFIG.PANEL_WIDTH}px;
+      height: 100vh;
+      background: #ffffff;
+      border-right: 1px solid #d0d0d0;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+    `;
+
+    // Create header
+    const header = document.createElement('div');
+    header.style.cssText = `
+      background: #f5f5f5;
+      color: #333;
+      padding: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid #d0d0d0;
+    `;
+    header.textContent = 'Web Agent';
+
+    // Create chat area
+    const chatArea = document.createElement('div');
+    chatArea.style.cssText = `
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    `;
+
+    // Create input area
+    const inputArea = document.createElement('div');
+    inputArea.style.cssText = `
+      padding: 16px;
+      border-top: 1px solid #d0d0d0;
+      background: #fafafa;
+      display: flex;
+      gap: 8px;
+    `;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Ask something...';
+    input.style.cssText = `
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+    `;
+
+    const sendBtn = document.createElement('button');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.cssText = `
+      padding: 8px 16px;
+      background: #f5f5f5;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    `;
+
+    sendBtn.addEventListener('mouseover', () => {
+      sendBtn.style.background = '#e8e8e8';
+    });
+    sendBtn.addEventListener('mouseout', () => {
+      sendBtn.style.background = '#f5f5f5';
+    });
+
+    sendBtn.addEventListener('click', async () => {
+      const message = input.value.trim();
+      if (!message) return;
+
+      // Add user message to chat
+      addMessageToChat(message, 'user', chatArea);
+      input.value = '';
+
+      // Get response from Ollama
+      try {
+        const response = await fetch(CONFIG.OLLAMA_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama2',
+            prompt: message,
+            stream: false
+          })
+        });
+
+        const data = await response.json();
+        addMessageToChat(data.response, 'assistant', chatArea);
+      } catch (error) {
+        addMessageToChat('Error: ' + error.message, 'error', chatArea);
+      }
+    });
+
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendBtn.click();
+      }
+    });
+
+    inputArea.appendChild(input);
+    inputArea.appendChild(sendBtn);
+
+    // Assemble panel
+    container.appendChild(header);
+    container.appendChild(chatArea);
+    container.appendChild(inputArea);
+
+    // Insert into page
+    document.documentElement.insertBefore(container, document.documentElement.firstChild);
+
+    // Adjust page content to account for panel
+    const style = document.createElement('style');
+    style.textContent = `
+      body {
+        margin-left: ${CONFIG.PANEL_WIDTH}px;
+      }
+    `;
+    document.head.appendChild(style);
+
+    console.log('Web Agent side panel injected successfully');
   }
 
-  // Create container for side panel
-  const container = document.createElement('div');
-  container.id = 'web-agent-side-panel';
-  container.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 350px;
-    height: 100vh;
-    background: white;
-    border-right: 1px solid #e0e0e0;
-    z-index: 999999;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  `;
+  function addMessageToChat(text, type, chatArea) {
+    const messageEl = document.createElement('div');
+    messageEl.style.cssText = `
+      padding: 8px 12px;
+      border-radius: 4px;
+      word-wrap: break-word;
+      font-size: 13px;
+      max-width: 100%;
+    `;
 
-  // Create header
-  const header = document.createElement('div');
-  header.style.cssText = `
-    background: #667eea;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-  `;
-  header.textContent = '✨ Web Agent';
-  container.appendChild(header);
-
-  // Create messages area
-  const messagesArea = document.createElement('div');
-  messagesArea.id = 'web-agent-messages';
-  messagesArea.style.cssText = `
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    background: #f9f9f9;
-  `;
-  container.appendChild(messagesArea);
-
-  // Create input area
-  const inputArea = document.createElement('div');
-  inputArea.style.cssText = `
-    padding: 12px;
-    background: white;
-    border-top: 1px solid #e0e0e0;
-    display: flex;
-    gap: 8px;
-    flex-direction: column;
-  `;
-
-  const input = document.createElement('input');
-  input.id = 'web-agent-input';
-  input.type = 'text';
-  input.placeholder = 'Ask anything...';
-  input.style.cssText = `
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: inherit;
-  `;
-
-  const sendBtn = document.createElement('button');
-  sendBtn.id = 'web-agent-send';
-  sendBtn.textContent = 'Send';
-  sendBtn.style.cssText = `
-    padding: 10px 16px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-  `;
-
-  inputArea.appendChild(input);
-  inputArea.appendChild(sendBtn);
-  container.appendChild(inputArea);
-
-  // Inject into page
-  document.body.insertBefore(container, document.body.firstChild);
-
-  // Adjust page margin to accommodate side panel
-  document.body.style.marginLeft = '350px';
-
-  // Add event listeners
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      handleSendMessage(input, messagesArea);
+    if (type === 'user') {
+      messageEl.style.background = '#e8f4f8';
+      messageEl.style.color = '#333';
+      messageEl.style.textAlign = 'right';
+    } else if (type === 'assistant') {
+      messageEl.style.background = '#f0f0f0';
+      messageEl.style.color = '#333';
+    } else {
+      messageEl.style.background = '#fcc';
+      messageEl.style.color = '#c33';
     }
-  });
-  sendBtn.addEventListener('click', () => {
-    handleSendMessage(input, messagesArea);
-  });
-}
 
-function handleSendMessage(inputEl, messagesArea) {
-  const text = inputEl.value.trim();
-  if (!text) return;
+    messageEl.textContent = text;
+    chatArea.appendChild(messageEl);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
 
-  // Add user message to display
-  const userMsg = document.createElement('div');
-  userMsg.style.cssText = `
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: flex-end;
-  `;
-  const userText = document.createElement('div');
-  userText.style.cssText = `
-    max-width: 85%;
-    padding: 10px 12px;
-    background: #667eea;
-    color: white;
-    border-radius: 6px;
-    word-wrap: break-word;
-    line-height: 1.3;
-    font-size: 13px;
-  `;
-  userText.textContent = text;
-  userMsg.appendChild(userText);
-  messagesArea.appendChild(userMsg);
-  messagesArea.scrollTop = messagesArea.scrollHeight;
+  // Inject panel when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectSidePanel);
+  } else {
+    injectSidePanel();
+  }
 
-  inputEl.value = '';
-  inputEl.disabled = true;
-
-  // Send message to agent
-  chrome.runtime.sendMessage(
-    { action: 'askAgent', prompt: text },
-    (response) => {
-      inputEl.disabled = false;
-      inputEl.focus();
-
-      if (response && response.success) {
-        const aiMsg = document.createElement('div');
-        aiMsg.style.cssText = `
-          margin-bottom: 12px;
-          display: flex;
-          justify-content: flex-start;
-        `;
-        const aiText = document.createElement('div');
-        aiText.style.cssText = `
-          max-width: 85%;
-          padding: 10px 12px;
-          background: white;
-          color: #333;
-          border: 1px solid #e0e0e0;
-          border-radius: 6px;
-          word-wrap: break-word;
-          line-height: 1.3;
-          font-size: 13px;
-        `;
-        aiText.textContent = response.response;
-        aiMsg.appendChild(aiText);
-        messagesArea.appendChild(aiMsg);
-      } else {
-        const errMsg = document.createElement('div');
-        errMsg.style.cssText = `
-          margin-bottom: 12px;
-          display: flex;
-          justify-content: flex-start;
-        `;
-        const errText = document.createElement('div');
-        errText.style.cssText = `
-          max-width: 85%;
-          padding: 10px 12px;
-          background: #ffebee;
-          color: #c62828;
-          border: 1px solid #ef5350;
-          border-radius: 6px;
-          word-wrap: break-word;
-          line-height: 1.3;
-          font-size: 13px;
-        `;
-        errText.textContent = `Error: ${response?.error || 'Unknown error'}`;
-        errMsg.appendChild(errText);
-        messagesArea.appendChild(errMsg);
-      }
-      messagesArea.scrollTop = messagesArea.scrollHeight;
-    }
-  );
-}
-
-// Inject side panel when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', injectSidePanel);
-} else {
-  injectSidePanel();
-}
-
-console.log('Web Agent side panel injected');
+  // Also listen for dynamically added pages
+  window.addEventListener('load', injectSidePanel);
+})();
