@@ -8,15 +8,14 @@
   },
   "permissions": [
     "tabs",
-    "scripting",
-    "sidePanel"
-  ],
+    "scripting",  ],
   "host_permissions": [
     "<http://127.0.0.1:11435/*>"
   ],
   "action": {
     "default_title": "AI Web Agent",
-    "default_icon": "icons/icon_128.png"
+    "default_icon": "icons/icon_128.png",
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "background.js"
@@ -28,9 +27,6 @@
       "run_at": "document_end"
     }
   ],
-  "side_panel": {
-    "default_path": "sidepanel.html"
-  },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; frame-src 'self';"
   }
