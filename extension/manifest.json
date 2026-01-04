@@ -1,24 +1,33 @@
 {
   "manifest_version": 3,
   "name": "AI Web Agent - Comet",
-  "version": "1.0",
   "description": "AI powered web automation agent using Ollama",
-  "permissions": [[
+  "version": "1.0",
+  "permissions": [
     "tabs",
     "scripting",
     "sidePanel"
-      ],"default_title": "AI Web Agent",
-"default_side_panel": "sidepanel.html"  },
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:11435/*"
+  ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_end"
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ],
   "content_security_policy": {
-"extension_pages": "script-src 'self' 'unsafe-inline'; object-src 'self'; frame-src 'self';"  }
+    "extension_pages": "script-src 'self' 'unsafe-inline'; object-src 'self';"
+  }
 }
