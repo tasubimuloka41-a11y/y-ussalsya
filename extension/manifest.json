@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "AI Web Agent - Comet",
+  "name": "Web Agent",
   "description": "AI powered web automation agent using Ollama",
   "version": "1.0",
   "permissions": [
