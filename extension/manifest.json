@@ -7,13 +7,12 @@
     "128": "icons/icon_128.png"
   },
   "permissions": [
-    "activeTab",
     "tabs",
     "scripting",
     "sidePanel"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<http://127.0.0.1:11435/*>"
   ],
   "action": {
     "default_title": "AI Web Agent",
