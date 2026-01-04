@@ -6,10 +6,13 @@
   "permissions": [
     "tabs",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "webRequest"
   ],
   "host_permissions": [
     "https://tasubimuloka41-a11y.github.io/*",
+    "https://www.youtube.com/*",
+    "https://youtube.com/*",
     "http://127.0.0.1:11434/*",
     "http://localhost:11434/*"
   ],
@@ -27,6 +30,16 @@
       "js": [
         "content.js"
       ]
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*"
+      ],
+      "js": [
+        "youtube-redirect.js"
+      ],
+      "run_at": "document_start"
     }
   ],
   "content_security_policy": {
