@@ -1,28 +1,24 @@
 // Background Service Worker for AI Web Agent Extension
 importScripts('agent.js');
 
-let monitoringEnabled = false;
-
-// Listen for messages from popup and content scripts
+// Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getStatus') {
-    sendResponse({ isMonitoring: monitoringEnabled });
-  } else if (request.action === 'toggleMonitoring') {
-    monitoringEnabled = !monitoringEnabled;
-    sendResponse({ isMonitoring: monitoringEnabled });
-  } else if (request.action === 'captureTab') {
-    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-      sendResponse({ screenshot: dataUrl });
-    });
-    return true; // Keep channel open for async response
-  } else if (request.action === 'runTask') {
-    const agent = new ATWebAgent();
-    agent.askModel(request.task).then(result => {
-      sendResponse({ success: true, result: result });
-    }).catch(error => {
-      sendResponse({ success: false, error: error.message });
-    });
-    return true; // Keep channel open for async response
+  console.log('Background received message:', request);
+  
+  if (request.action === 'askAgent') {
+    // Forward to agent and get response
+    agent.askModel(request.prompt)
+      .then(response => {
+        console.log('Agent response:', response);
+        sendResponse({ success: true, response: response });
+      })
+      .catch(error => {
+        console.error('Agent error:', error);
+        sendResponse({ success: false, error: error.message });
+      });
+    
+    // Keep channel open for async response
+    return true;
   }
 });
 
