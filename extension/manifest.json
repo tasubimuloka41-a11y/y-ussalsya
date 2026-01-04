@@ -5,7 +5,8 @@
   "description": "AI powered web automation agent using Ollama",
   "permissions": [
     "tabs",
-    "scripting"  ],  ]
+    "scripting"
+] ,
   "host_permissions": [
     "http://127.0.0.1:11435/*"  ],
   "action": {
