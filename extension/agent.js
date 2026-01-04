@@ -1,7 +1,7 @@
-// AI Web Agent - исправленная версия с правильным API путем
+// AI web agent - исправленная версия с правильным API путем
 
 const OLLAMA_URL = 'http://127.0.0.1:11435/api/chat';
-const MODEL = 'gemma3:12b';
+const MODEL = 'gemma3:1b';
 
 class AIWebAgent {
   constructor() {
@@ -21,6 +21,7 @@ class AIWebAgent {
     try {
       const response = await fetch(OLLAMA_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: MODEL,
@@ -34,72 +35,19 @@ class AIWebAgent {
       }
 
       const data = await response.json();
-      return data.message?.content || 'No response';
-    } catch (error) {
-      console.error('API Error:', error);
-      return `Error: ${error.message}`;
-    }
-  }
-
-  async captureScreen() {
-    return new Promise((resolve) => {
-      chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-        resolve(dataUrl ? dataUrl.split(',')[1] : null);
-      });
-    });
-  }
-
-  async run(userTask) {
-    if (this.isRunning) return;
-    this.isRunning = true;
-    const logs = [];
-
-    try {
-      const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-      const activeTab = tabs[0];
-      if (!activeTab) throw new Error('No active tab');
-
-      logs.push(`Task: ${userTask}`);
-
-      const screenshot = await this.captureScreen();
-      if (screenshot) {
-        logs.push('Screenshot captured');
+      
+      if (data.message?.content) {
+        return data.message.content;
+      } else if (data.response) {
+        return data.response;
+      } else {
+        throw new Error('No response from model');
       }
-
-      logs.push('Processing with AI...');
-      const planPrompt = `Task: ${userTask}\n\nCreate a plan using these commands only:\n- OPEN url\n- CLICK x y\n- TYPE text\n- DONE`;
-
-      const plan = await this.askModel(planPrompt);
-      logs.push('Plan:', plan);
-
-      const commands = plan.split('\n').filter(line => line.trim());
-      for (let i = 0; i < Math.min(commands.length, 10); i++) {
-        const command = commands[i].trim();
-        if (!command) continue;
-        logs.push(`Executing: ${command}`);
-
-        if (command.match(/OPEN/i)) {
-          const m = command.match(/OPEN\s+(\S+)/i);
-          if (m) {
-            const url = m[1].startsWith('http') ? m[1] : `https://${m[1]}`;
-            await chrome.tabs.create({ url });
-            logs.push(`Opened: ${url}`);
-          }
-        } else if (command.match(/DONE/i)) {
-          logs.push('Task completed!');
-          break;
-        }
-      }
-    } catch (error) {
-      logs.push(`Error: ${error.message}`);
-    } finally {
-      this.isRunning = false;
+    } catch (err) {
+      console.error('Error calling Ollama:', err);
+      throw new Error(`Failed to get response: ${err.message}. Make sure Ollama is running at ${OLLAMA_URL}`);
     }
-
-    return logs.join('\n');
   }
 }
 
-if (typeof module !== 'undefined') {
-  module.exports = AIWebAgent;
-}
+const agent = new AIWebAgent();
