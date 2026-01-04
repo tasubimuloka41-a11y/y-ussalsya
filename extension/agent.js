@@ -1,6 +1,6 @@
 // AI Web Agent - исправленная версия с правильным API путем
 
-const OLLAMA_URL = 'http://127.0.0.1:5557/api/chat';
+const OLLAMA_URL = 'http://127.0.0.1:11435/api/chat';
 const MODEL = 'gemma3:12b';
 
 class AIWebAgent {
