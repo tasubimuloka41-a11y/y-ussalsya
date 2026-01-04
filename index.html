@@ -1,87 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Agent - Ollama AI Chat</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 40px;
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      color: #667eea;
-      margin-bottom: 16px;
-      font-size: 28px;
-    }
-    p {
-      color: #666;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .info {
-      background: #f5f5f5;
-      border-left: 4px solid #667eea;
-      padding: 16px;
-      text-align: left;
-      margin: 20px 0;
-      border-radius: 4px;
-    }
-    .info li {
-      margin: 8px 0;
-      color: #333;
-    }
-    .status {
-      background: #e8f4f8;
-      color: #0066cc;
-      padding: 12px;
-      border-radius: 4px;
-      margin: 20px 0;
-      font-weight: 500;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ссылки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .button {
+            padding: 20px 40px;
+            border-radius: 50px;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .youtube-btn {
+            background: #FF0000;
+            color: white;
+        }
+        
+        .youtube-btn:hover {
+            background: #CC0000;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255,0,0,0.3);
+        }
+        
+        .grok-btn {
+            background: #000000;
+            color: white;
+        }
+        
+        .grok-btn:hover {
+            background: #333333;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>✨ Web Agent</h1>
-    <p>AI-powered web automation using Ollama</p>
-    
-    <div class="status">
-      🔧 Extension installed successfully
+    <div class="container">
+        <a href="https://youtube.com" class="button youtube-btn">YouTube</a>
+        <a href="https://grok.com" class="button grok-btn">Grok</a>
     </div>
-    
-    <div class="info">
-      <p style="margin-bottom: 12px; font-weight: 600; text-align: left;">How to use:</p>
-      <ul style="margin-left: 20px;">
-        <li>Install the Web Agent extension in Chrome</li>
-        <li>Open the side panel from the extension icon</li>
-        <li>Make sure Ollama is running on http://127.0.0.1:11434</li>
-        <li>Type your request in the side panel</li>
-      </ul>
-    </div>
-    
-    <p style="font-size: 14px; color: #999; margin-top: 20px;">
-      The main interface is in the extension side panel →
-    </p>
-  </div>
 </body>
 </html>
