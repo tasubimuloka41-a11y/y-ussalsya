@@ -1,54 +1,91 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const taskInput = document.getElementById('taskInput');
-  const runButton = document.getElementById('runAgent');
-  const outputDiv = document.getElementById('agentOutput');
-  
-  runButton.addEventListener('click', async () => {
-    const task = taskInput.value.trim();
-    if (!task) {
-      addOutput('❌ Please enter a task');
-      return;
+    const taskInput = document.getElementById('taskInput');
+    const runAgent = document.getElementById('runAgent');
+    const outputDiv = document.getElementById('output');
+    const statusBar = document.getElementById('statusBar');
+
+    let isProcessing = false;
+
+    // Initialize status
+    updateStatus('Ready', 'connected');
+
+    // Event listener for Send button
+    runAgent.addEventListener('click', async () => {
+        const task = taskInput.value.trim();
+        if (!task) {
+            addOutput('Please enter a task or question.', 'error');
+            return;
+        }
+        if (isProcessing) return;
+
+        isProcessing = true;
+        runAgent.disabled = true;
+        taskInput.disabled = true;
+        outputDiv.innerHTML = '';
+
+        try {
+            addOutput('Processing task...', 'loading');
+            updateStatus('Processing...', 'loading');
+
+            const response = await chrome.runtime.sendMessage({
+                action: 'runTask',
+                task: task
+            });
+
+            outputDiv.innerHTML = '';
+            if (response && response.result) {
+                addOutput('Task Result:', 'success');
+                addOutput(response.result, 'result');
+                updateStatus('Completed', 'connected');
+            } else if (response && response.error) {
+                addOutput('Error: ' + response.error, 'error');
+                updateStatus('Error occurred', 'error');
+            } else {
+                addOutput('No result returned', 'error');
+                updateStatus('No result', 'error');
+            }
+        } catch (error) {
+            addOutput('Error: ' + error.message || 'Unknown error', 'error');
+            updateStatus('Error: ' + error.message, 'error');
+        } finally {
+            isProcessing = false;
+            runAgent.disabled = false;
+            taskInput.disabled = false;
+            taskInput.focus();
+        }
+    });
+
+    // Allow Enter key to submit
+    taskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !isProcessing) {
+            runAgent.click();
+        }
+    });
+
+    function addOutput(text, type = 'result') {
+        const item = document.createElement('div');
+        item.className = 'output-item';
+        if (type !== 'result') item.classList.add(type);
+        
+        if (type === 'loading' || type === 'error' || type === 'success') {
+            item.innerHTML = `<div class="output-label">${type.toUpperCase()}</div><div class="output-text">${escapeHtml(text)}</div>`;
+        } else {
+            item.innerHTML = `<div class="output-text">${escapeHtml(text)}</div>`;
+        }
+        
+        outputDiv.appendChild(item);
+        outputDiv.scrollTop = outputDiv.scrollHeight;
     }
-    
-    addOutput('🔄 Processing task...');
-    
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'runTask',
-        task: task
-      });
-      
-      if (response && response.result) {
-        addOutput('✅ Task completed!');
-        addOutput('Result: ' + response.result);
-      } else {
-        addOutput('✅ Task executed');
-      }
-    } catch (e) {
-      addOutput('❌ Error: ' + (e.message || 'Unknown error'));
+
+    function updateStatus(text, statusClass = '') {
+        statusBar.textContent = text;
+        statusBar.className = 'status-bar';
+        if (statusClass) statusBar.classList.add(statusClass);
     }
-  });
-  
-  // Allow Enter key to run task
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
-      runButton.click();
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
-  });
-  
-  function addOutput(message) {
-    const time = new Date().toLocaleTimeString();
-    const entry = document.createElement('div');
-    entry.style.marginBottom = '5px';
-    entry.textContent = `[${time}] ${message}`;
-    outputDiv.appendChild(entry);
-    outputDiv.scrollTop = outputDiv.scrollHeight;
-  }
-  
-  // Listen for messages from background
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'updateOutput') {
-      addOutput(request.message);
-    }
-  });
 });
