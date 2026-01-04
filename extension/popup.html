@@ -98,9 +98,9 @@
 
                 const data = await response.json();
                 const result = data.message?.content || 'Нет ответа';
-                output.textContent = '✅ Ответ от AI:\n\n' + result;
+                output.textContent = '✅ Ответ от AI:' + result;
             } catch (error) {
-                output.textContent = '❌ Ошибка:\n' + error.message;
+                output.textContent = '❌ Ошибка:' + error.message;
             }
         }
 
