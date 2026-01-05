@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600&display=swap");
+
+* {
+  отступ: 0;
+  отступ: 0;
+}
+
+тело {
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ширина: 100vw;
+  высота: 100vh;
+  фон: #000;
+  цвет: #fff;
+  font-family: "Open sans", sans-serif;
+}
+
+.webgl {
+  положение: фиксированное;
+  верх: 0;
+  слева: 0;
+  z-индекс: -1;
+  непрозрачность: 0;
+  Задержка перехода: 1 с;
+  переход: плавное начало-конец за 5 секунд;
+}
+
+.webgl-active {
+  непрозрачность: 1;
+}
+
+.container {
+  text-align: center;
+  переход: 1 с;
+  Задержка перехода: 1 с;
+}
+
+.container::before {
+  содержание: "";
+  положение: фиксированное;
+  верх: 0;
+  справа: 0;
+  ширина: 0;
+  высота: 100vh;
+  background: linear-gradient(to left, #000 70%, transparent);
+  анимация: 1 с начало-конец;
+}
+
+@keyframes opening {
+  от {
+    ширина: 100vw;
+  }
+  к {
+    ширина: 0;
+  }
+}
+
+.скрытый {
+  pointer-events: none;
+  непрозрачность: 0;
+}
