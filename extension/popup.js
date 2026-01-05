@@ -1,10 +1,16 @@
-// popup.js - Web Agent popup script
+// popup.js - Web Agent with file upload support
 
 const userInput = document.getElementById('userInput');
 const output = document.getElementById('output');
+const sendBtn = document.getElementById('sendBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const fileInput = document.getElementById('fileInput');
+const filesList = document.getElementById('filesList');
 
 const API_URL = 'http://localhost:11434/api/generate';
 const MODEL = 'gemma3:12b';
+
+let selectedFiles = [];
 
 function createMessageElement(text, isUser) {
     const div = document.createElement('div');
@@ -17,11 +23,44 @@ function scrollToBottom() {
     output.scrollTop = output.scrollHeight;
 }
 
+function updateFilesList() {
+    filesList.innerHTML = '';
+    if (selectedFiles.length === 0) {
+        filesList.innerHTML = '<span style="opacity: 0.5; font-size: 12px; color: #888;">No files selected</span>';
+        return;
+    }
+    selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span>${file.name}</span><span class="remove" onclick="removeFile(${index})">×</span>`;
+        filesList.appendChild(item);
+    });
+}
+
+window.removeFile = function(index) {
+    selectedFiles.splice(index, 1);
+    updateFilesList();
+}
+
+uploadBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+    selectedFiles = Array.from(e.target.files);
+    updateFilesList();
+    fileInput.value = '';
+});
+
 async function sendMessage(message) {
     if (!message.trim()) return;
 
-    // Add user message to output
-    output.appendChild(createMessageElement(message, true));
+    // Add user message with file info
+    let userMsg = message;
+    if (selectedFiles.length > 0) {
+        userMsg += ` [Files: ${selectedFiles.map(f => f.name).join(', ')}]`;
+    }
+    output.appendChild(createMessageElement(userMsg, true));
     userInput.value = '';
     scrollToBottom();
 
@@ -56,6 +95,9 @@ async function sendMessage(message) {
         
         output.appendChild(createMessageElement(reply, false));
         scrollToBottom();
+        
+        selectedFiles = [];
+        updateFilesList();
 
     } catch (error) {
         loadingDiv.remove();
@@ -67,16 +109,22 @@ async function sendMessage(message) {
     }
 }
 
-// Handle Enter key (not Ctrl+Enter, just Enter)
+// Send button click
+sendBtn.addEventListener('click', () => {
+    sendMessage(userInput.value);
+});
+
+// Ctrl+Enter to send (or Cmd+Enter on Mac)
 userInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         sendMessage(userInput.value);
     }
 });
 
-// Initial message
+// Initial setup
 window.addEventListener('load', () => {
-    output.appendChild(createMessageElement('Web Agent ready. Type your question or command.', false));
+    output.appendChild(createMessageElement('Web Agent ready. Add files with the + button, type your message, then Ctrl+Enter to send.', false));
+    updateFilesList();
     userInput.focus();
 });
