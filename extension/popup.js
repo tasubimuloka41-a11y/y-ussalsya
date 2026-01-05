@@ -114,17 +114,16 @@ sendBtn.addEventListener('click', () => {
     sendMessage(userInput.value);
 });
 
-// Ctrl+Enter to send (or Cmd+Enter on Mac)
+// Enter to send (or Cmd+Enter on Mac)
 userInput.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
+    if (e.key === 'Enter') {        e.preventDefault();
         sendMessage(userInput.value);
     }
 });
 
 // Initial setup
 window.addEventListener('load', () => {
-    output.appendChild(createMessageElement('Web Agent ready. Add files with the + button, type your message, then Ctrl+Enter to send.', false));
+    output.appendChild(createMessageElement('Web Agent ready. Add files with the + button, type your message, then Enter to send.', false));
     updateFilesList();
     userInput.focus();
 });
