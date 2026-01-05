@@ -67,7 +67,7 @@
     </div>
 
     <script>
-        const OLLAMA_URL = 'http://127.0.0.1:11435/api/chat';
+        const OLLAMA_URL = 'http://127.0.0.1:11434/api/chat';
         const MODEL = 'gemma3:12b';
 
         async function runTask() {
@@ -106,7 +106,7 @@
 
         // Позволить отправку Enter
         document.getElementById('taskInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && e.ctrlKey) {
+            if (e.key === 'Enter') {
                 runTask();
             }
         });
