@@ -1,65 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#000">
     <title>Skull 3D</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; }
+        html, body { width: 100%; height: 100%; background: #000; }
         body { 
-            background: #000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
+            font-family: system-ui, sans-serif;
         }
-        .skull-box { 
+        .skull { 
             flex: 1;
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            overflow: hidden;
             position: relative;
         }
-        iframe { width: 100%; height: 100%; border: none; display: block; }
-        .btns { 
-            background: rgba(0,0,0,0.8);
-            padding: 12px;
+        .skull iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            display: block;
+        }
+        .buttons { 
             display: flex;
             gap: 10px;
+            padding: 12px;
+            background: rgba(0,0,0,0.9);
+            border-top: 1px solid #222;
             justify-content: center;
             flex-wrap: wrap;
-            border-top: 1px solid #333;
         }
         .btn { 
-            padding: 10px 16px;
-            background: #333;
-            border: 1px solid #555;
+            padding: 11px 18px;
+            background: #222;
+            border: 1px solid #444;
             color: #fff;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 5px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
+            transition: 0.2s;
+            min-width: 70px;
+            text-align: center;
         }
-        .btn:active { background: #555; }
+        .btn:active { 
+            background: #444;
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
-    <div class="skull-box">
+    <div class="skull">
         <iframe src="https://huseynovvusal.github.io/skull/" allow="fullscreen"></iframe>
     </div>
-    <div class="btns">
+    <div class="buttons">
         <a href="https://deepseek.com" target="_blank" class="btn">DeepSeek</a>
         <a href="https://www.perplexity.ai" target="_blank" class="btn">Perplexity</a>
     </div>
