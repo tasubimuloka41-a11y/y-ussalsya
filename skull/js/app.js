@@ -45,7 +45,7 @@ window.addEventListener("resize", () => {
 
 const loader = new THREE.GLTFLoader();
 
-loader.load("https://raw.githubusercontent.com/huseynovvusal/skull/main/model/scene.gltfscene.gltf", (gltf) => {
+loader.load("https://raw.githubusercontent.com/huseynovvusal/skull/main/model/scene.gltf", (gltf) => {
   canvas.classList.add("webgl-active");
   container.classList.add("hidden");
   model = gltf.scene;
