@@ -56,7 +56,39 @@
             background: #444;
             transform: scale(0.98);
         }
-    </style>
+
+ .sidebar {
+ position: fixed;
+ right: 20px;
+ top: 50%;
+ transform: translateY(-50%);
+ display: flex;
+ flex-direction: column;
+ gap: 15px;
+ z-index: 9999;
+ }
+ .sidebar-btn {
+ width: 50px;
+ height: 50px;
+ border-radius: 50%;
+ background: rgba(255,255,255,0.2);
+ color: #fff;
+ font-size: 24px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ text-decoration: none;
+ border: 2px solid rgba(255,255,255,0.3);
+ transition: all 0.3s;
+ backdrop-filter: blur(10px);
+ }
+ .sidebar-btn:hover {
+ background: rgba(255,255,255,0.4);
+ border-color: rgba(255,255,255,0.6);
+ transform: scale(1.1);
+ }
+ .grok-btn { border-color: #7c3aed; }
+ .deepseek-btn { border-color: #1e40af; }    </style>
 </head>
 <body>
     <div class="skull">
@@ -66,5 +98,10 @@
         <a href="https://deepseek.com" target="_blank" class="btn">DeepSeek</a>
         <a href="https://www.perplexity.ai" target="_blank" class="btn">Perplexity</a>
     </div>
+
+<div class="sidebar">
+<a href="https://grok.com" target="_blank" title="Grok AI" class="sidebar-btn grok-btn">💬</a>
+<a href="https://deepseek.com" target="_blank" title="DeepSeek" class="sidebar-btn deepseek-btn">🔍</a>
+</div>
 </body>
 </html>
