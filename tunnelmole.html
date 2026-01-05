@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tunnelmole VPN Proxy</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; font-family: Arial, sans-serif; }
+    body { display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff; padding: 20px; min-height: 100vh; }
+    .container { text-align: center; width: 100%; max-width: 400px; }
+    h1 { font-size: 32px; margin-bottom: 10px; }
+    .description { font-size: 14px; color: #b0b0b0; margin-bottom: 40px; }
+    .button-group { display: flex; flex-direction: column; gap: 15px; width: 100%; }
+    button { padding: 16px 24px; font-size: 18px; font-weight: 600;
+      border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s;
+      width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .btn-grok { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; }
+    .btn-grok:hover { background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%); }
+    .btn-youtube { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+    .btn-youtube:hover { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+    .info-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 16px; margin-top: 30px; font-size: 12px; color: #a0a0a0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tunnelmole VPN</h1>
+    <p class="description">Access YouTube & Grok through your local VPN proxy</p>
+    <div class="button-group">
+      <button class="btn-grok" onclick="redirectToGrok()">Open Grok</button>
+      <button class="btn-youtube" onclick="redirectToYouTube()">Open YouTube</button>
+    </div>
+    <div class="info-box">
+      <strong>Setup Instructions:</strong><br>
+      1. Install Node.js<br>
+      2. npm install -g tunnelmole<br>
+      3. Set up NGINX locally<br>
+      4. tmole 80<br>
+      5. Replace tunnel URL in script
+    </div>
+  </div>
+  <script>
+    const CONFIG = {
+      tunnelUrl: 'https://YOUR_TUNNEL_URL',
+      grokPath: '/grok/',
+      youtubePath: '/youtube/'
+    };
+    function redirectToGrok() {
+      window.location.href = CONFIG.tunnelUrl + CONFIG.grokPath;
+    }
+    function redirectToYouTube() {
+      window.location.href = CONFIG.tunnelUrl + CONFIG.youtubePath;
+    }
+  </script>
+</body>
+</html>
