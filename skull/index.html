@@ -1,15 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Skull - Redirect</title>
+    <title>3D Skull с зеркалами</title>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; }
-        iframe { width: 100%; height: 100vh; border: none; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial;overflow:hidden;background:linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f093fb 50%,#4facfe 75%,#00f2fe 100%);background-size:400% 400%;animation:shift 8s ease infinite;height:100vh;display:flex;align-items:center;justify-content:center}
+        @keyframes shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        .container{position:relative;width:100%;height:100vh}
+        .skull{position:absolute;width:100%;height:100%;opacity:0.9}
+        .skull iframe{width:100%;height:100%;border:none}
+        .btns{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;gap:20px;flex-wrap:wrap;justify-content:center;z-index:100}
+        .btn{padding:15px 30px;font-size:16px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;transition:all 0.3s;text-decoration:none;display:inline-block;color:white;box-shadow:0 8px 15px rgba(0,0,0,0.2)}
+        .btn:hover{transform:translateY(-3px);box-shadow:0 12px 20px rgba(0,0,0,0.3)}
+        .btn1{background:linear-gradient(135deg,#667eea,#764ba2)}
+        .btn2{background:linear-gradient(135deg,#f093fb,#f5576c)}
+        .btn3{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+        .btn4{background:linear-gradient(135deg,#fa709a,#fee140)}
     </style>
 </head>
 <body>
-    <iframe src="https://huseynovvusal.github.io/skull/" allow="fullscreen"></iframe>
+    <div class="container">
+        <div class="skull"><iframe src="https://huseynovvusal.github.io/skull/" allow="fullscreen"></iframe></div>
+        <div class="btns">
+            <a href="https://deepseek.com" target="_blank" class="btn btn1">💻 DeepSeek</a>
+            <a href="https://claude.ai" target="_blank" class="btn btn2">🤖 Claude</a>
+            <a href="https://www.anthropic.com" target="_blank" class="btn btn3">✨ Sonnet</a>
+            <a href="https://www.perplexity.ai" target="_blank" class="btn btn4">🔍 Perplexity</a>
+        </div>
+    </div>
 </body>
 </html>
