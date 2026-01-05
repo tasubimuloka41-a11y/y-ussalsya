@@ -1,7 +1,7 @@
 // AI web agent - исправленная версия с /api/generate endpoint
 
-const OLLAMA_URL = 'http://127.0.0.1:11435/api/generate';
-const MODEL = 'llama2';
+const OLLAMA_URL = 'http://127.0.0.1:11434/api/generate';
+const MODEL = ''emma3:12b''
 
 class AIWebAgent {
   constructor() {
